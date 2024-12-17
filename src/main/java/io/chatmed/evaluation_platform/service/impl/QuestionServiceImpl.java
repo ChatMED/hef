@@ -55,11 +55,11 @@ public class QuestionServiceImpl implements QuestionService {
                 List<Score> scores = scoreRepository.findAllByAnswer(answer);
 
                 // Calculate averages
-                double avgBias = scores.stream().mapToDouble(Score::getBias).average().orElse(0.0);
-                double avgAccuracy = scores.stream().mapToDouble(Score::getAccuracy).average().orElse(0.0);
-                double avgCompleteness = scores.stream().mapToDouble(Score::getCompleteness).average().orElse(0.0);
-                double avgRelevance = scores.stream().mapToDouble(Score::getRelevance).average().orElse(0.0);
-                double avgSafety = scores.stream().mapToDouble(Score::getSafety).average().orElse(0.0);
+                double avgBias = scores.stream().filter(score -> score.getBias() != null).mapToDouble(Score::getBias).average().orElse(0.0);
+                double avgAccuracy = scores.stream().filter(score -> score.getAccuracy() != null).mapToDouble(Score::getAccuracy).average().orElse(0.0);
+                double avgCompleteness = scores.stream().filter(score -> score.getCompleteness() != null).mapToDouble(Score::getCompleteness).average().orElse(0.0);
+                double avgRelevance = scores.stream().filter(score -> score.getRelevance() != null).mapToDouble(Score::getRelevance).average().orElse(0.0);
+                double avgSafety = scores.stream().filter(score -> score.getSafety() != null).mapToDouble(Score::getSafety).average().orElse(0.0);
 
                 // Convert Scores to AnswerDto
                 List<AnswerDto> answerDtos = scores.stream().map(score -> {
