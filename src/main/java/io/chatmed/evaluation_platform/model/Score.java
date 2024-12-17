@@ -23,6 +23,8 @@ public class Score {
 
     private Double bias;
 
+    private String user;
+
     @Column(length = 10000)
     private String feedback;
 
@@ -88,5 +90,13 @@ public class Score {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 }
