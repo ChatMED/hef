@@ -55,20 +55,25 @@ public class QuestionServiceImpl implements QuestionService {
                 List<Score> scores = scoreRepository.findAllByAnswer(answer);
 
                 // Calculate averages
-                double avgBias = scores.stream().filter(score -> score.getBias() != null).mapToDouble(Score::getBias).average().orElse(0.0);
                 double avgAccuracy = scores.stream().filter(score -> score.getAccuracy() != null).mapToDouble(Score::getAccuracy).average().orElse(0.0);
-                double avgCompleteness = scores.stream().filter(score -> score.getCompleteness() != null).mapToDouble(Score::getCompleteness).average().orElse(0.0);
-                double avgRelevance = scores.stream().filter(score -> score.getRelevance() != null).mapToDouble(Score::getRelevance).average().orElse(0.0);
-                double avgSafety = scores.stream().filter(score -> score.getSafety() != null).mapToDouble(Score::getSafety).average().orElse(0.0);
+                double avgComprehensiveness = scores.stream().filter(score -> score.getComprehensiveness() != null).mapToDouble(Score::getComprehensiveness).average().orElse(0.0);
+                double avgClarity = scores.stream().filter(score -> score.getClarity() != null).mapToDouble(Score::getClarity).average().orElse(0.0);
+                double avgEmpathy = scores.stream().filter(score -> score.getEmpathy() != null).mapToDouble(Score::getEmpathy).average().orElse(0.0);
+                double avgBias = scores.stream().filter(score -> score.getBias() != null).mapToDouble(Score::getBias).average().orElse(0.0);
+                double avgHarm = scores.stream().filter(score -> score.getHarm() != null).mapToDouble(Score::getHarm).average().orElse(0.0);
+                double avgTrust = scores.stream().filter(score -> score.getTrust() != null).mapToDouble(Score::getTrust).average().orElse(0.0);
 
                 // Convert Scores to AnswerDto
                 List<AnswerDto> answerDtos = scores.stream().map(score -> {
                     AnswerDto answerDto = AnswerDto.from(answer);
-                    answerDto.setBias(score.getBias());
                     answerDto.setAccuracy(score.getAccuracy());
-                    answerDto.setCompleteness(score.getCompleteness());
-                    answerDto.setRelevance(score.getRelevance());
-                    answerDto.setSafety(score.getSafety());
+                    answerDto.setComprehensiveness(score.getComprehensiveness());
+                    answerDto.setClarity(score.getClarity());
+                    answerDto.setEmpathy(score.getEmpathy());
+                    answerDto.setBias(score.getBias());
+                    answerDto.setHarm(score.getHarm());
+                    answerDto.setTrust(score.getTrust());
+
                     answerDto.setComment(score.getFeedback());
                     answerDto.setUser(score.getUser());
                     return answerDto;
@@ -77,11 +82,14 @@ public class QuestionServiceImpl implements QuestionService {
                 // Create AnswerResultsDto with averages
                 AnswerResultsDto answerResultsDto = AnswerResultsDto.from(answer);
                 answerResultsDto.setResults(answerDtos);
-                answerResultsDto.setBias(avgBias);
                 answerResultsDto.setAccuracy(avgAccuracy);
-                answerResultsDto.setCompleteness(avgCompleteness);
-                answerResultsDto.setRelevance(avgRelevance);
-                answerResultsDto.setSafety(avgSafety);
+                answerResultsDto.setComprehensiveness(avgComprehensiveness);
+                answerResultsDto.setClarity(avgClarity);
+                answerResultsDto.setEmpathy(avgEmpathy);
+                answerResultsDto.setBias(avgBias);
+                answerResultsDto.setHarm(avgHarm);
+                answerResultsDto.setTrust(avgTrust);
+
                 answerResultsDto.setComment(null); // Comment might not be averaged, set to null or handle as needed
                 answerResultsDto.setUser(null);    // User may not be averaged, set to null or handle as needed
 

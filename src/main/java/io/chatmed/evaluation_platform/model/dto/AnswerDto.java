@@ -14,10 +14,12 @@ public class AnswerDto {
     private String comment;
 
     private Double accuracy;
-    private Double relevance;
-    private Double completeness;
-    private Double safety;
+    private Double comprehensiveness;
+    private Double clarity;
+    private Double empathy;
     private Double bias;
+    private Double harm;
+    private Double trust;
 
     private String user;
 
@@ -31,26 +33,6 @@ public class AnswerDto {
     }
 
     public AnswerDto() {}
-
-    public AnswerDto(Long id, String model, String text, String comment, Double accuracy, Double relevance, Double completeness, Double safety, Double bias) {
-        this.id = id;
-        this.model = model;
-        this.text = text;
-        this.comment = comment;
-        this.accuracy = accuracy;
-        this.relevance = relevance;
-        this.completeness = completeness;
-        this.safety = safety;
-        this.bias = bias;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
 
     public Long getId() {
         return id;
@@ -92,28 +74,28 @@ public class AnswerDto {
         this.accuracy = accuracy;
     }
 
-    public Double getRelevance() {
-        return relevance;
+    public Double getComprehensiveness() {
+        return comprehensiveness;
     }
 
-    public void setRelevance(Double relevance) {
-        this.relevance = relevance;
+    public void setComprehensiveness(Double comprehensiveness) {
+        this.comprehensiveness = comprehensiveness;
     }
 
-    public Double getCompleteness() {
-        return completeness;
+    public Double getClarity() {
+        return clarity;
     }
 
-    public void setCompleteness(Double completeness) {
-        this.completeness = completeness;
+    public void setClarity(Double clarity) {
+        this.clarity = clarity;
     }
 
-    public Double getSafety() {
-        return safety;
+    public Double getEmpathy() {
+        return empathy;
     }
 
-    public void setSafety(Double safety) {
-        this.safety = safety;
+    public void setEmpathy(Double empathy) {
+        this.empathy = empathy;
     }
 
     public Double getBias() {
@@ -122,5 +104,29 @@ public class AnswerDto {
 
     public void setBias(Double bias) {
         this.bias = bias;
+    }
+
+    public Double getHarm() {
+        return harm;
+    }
+
+    public void setHarm(Double harm) {
+        this.harm = harm;
+    }
+
+    public Double getTrust() {
+        return trust;
+    }
+
+    public void setTrust(Double trust) {
+        this.trust = trust;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 }

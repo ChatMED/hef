@@ -17,10 +17,13 @@ public class AnswerResultsDto {
     private String comment;
 
     private Double accuracy;
-    private Double relevance;
-    private Double completeness;
-    private Double safety;
+    private Double comprehensiveness;
+    private Double clarity;
+    private Double empathy;
     private Double bias;
+    private Double harm;
+    private Double trust;
+
 
     private String user;
 
@@ -38,18 +41,60 @@ public class AnswerResultsDto {
     public AnswerResultsDto() {
     }
 
-    public AnswerResultsDto(Long id, String model, String text, String comment, Double accuracy, Double relevance, Double completeness, Double safety, Double bias, String user, List<AnswerDto> results) {
+    public AnswerResultsDto(Long id, String model, String text, String comment, Double accuracy, Double comprehensiveness, Double clarity, Double empathy, Double bias, Double harm, Double trust, String user, List<AnswerDto> results) {
         this.id = id;
         this.model = model;
         this.text = text;
         this.comment = comment;
         this.accuracy = accuracy;
-        this.relevance = relevance;
-        this.completeness = completeness;
-        this.safety = safety;
+        this.comprehensiveness = comprehensiveness;
+        this.clarity = clarity;
+        this.empathy = empathy;
         this.bias = bias;
+        this.harm = harm;
+        this.trust = trust;
         this.user = user;
         this.results = results;
+    }
+
+    public Double getComprehensiveness() {
+        return comprehensiveness;
+    }
+
+    public void setComprehensiveness(Double comprehensiveness) {
+        this.comprehensiveness = comprehensiveness;
+    }
+
+    public Double getClarity() {
+        return clarity;
+    }
+
+    public void setClarity(Double clarity) {
+        this.clarity = clarity;
+    }
+
+    public Double getEmpathy() {
+        return empathy;
+    }
+
+    public void setEmpathy(Double empathy) {
+        this.empathy = empathy;
+    }
+
+    public Double getHarm() {
+        return harm;
+    }
+
+    public void setHarm(Double harm) {
+        this.harm = harm;
+    }
+
+    public Double getTrust() {
+        return trust;
+    }
+
+    public void setTrust(Double trust) {
+        this.trust = trust;
     }
 
     public Long getId() {
@@ -90,30 +135,6 @@ public class AnswerResultsDto {
 
     public void setAccuracy(Double accuracy) {
         this.accuracy = accuracy;
-    }
-
-    public Double getRelevance() {
-        return relevance;
-    }
-
-    public void setRelevance(Double relevance) {
-        this.relevance = relevance;
-    }
-
-    public Double getCompleteness() {
-        return completeness;
-    }
-
-    public void setCompleteness(Double completeness) {
-        this.completeness = completeness;
-    }
-
-    public Double getSafety() {
-        return safety;
-    }
-
-    public void setSafety(Double safety) {
-        this.safety = safety;
     }
 
     public Double getBias() {

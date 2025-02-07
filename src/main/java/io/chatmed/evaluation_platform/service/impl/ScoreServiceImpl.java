@@ -24,13 +24,18 @@ public class ScoreServiceImpl implements ScoreService {
         Answer answer = answerRepository.findById(answerDto.getId()).orElseThrow(ResourceNotFoundException::new);
         Score score = new Score();
         score.setAnswer(answer);
+
         score.setAccuracy(answerDto.getAccuracy());
-        score.setBias(answerDto.getAccuracy());
+        score.setComprehensiveness(answerDto.getComprehensiveness());
+        score.setClarity(answerDto.getClarity());
+        score.setEmpathy(answerDto.getEmpathy());
+        score.setBias(answerDto.getBias());
+        score.setHarm(answerDto.getHarm());
+        score.setTrust(answerDto.getTrust());
+
         score.setFeedback(answerDto.getComment());
-        score.setCompleteness(answerDto.getAccuracy());
-        score.setRelevance(answerDto.getAccuracy());
-        score.setSafety(answerDto.getAccuracy());
         score.setUser(answerDto.getUser());
+
 
         return scoreRepository.save(score);
     }

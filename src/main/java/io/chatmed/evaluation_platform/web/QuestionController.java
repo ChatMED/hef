@@ -24,6 +24,7 @@ public class QuestionController {
     List<QuestionDto> getQuestions() {
         return questionService.getQuestions();
     }
+
     @GetMapping("/results")
     List<QuestionResultsDto> getResults() {
         return questionService.getResults();
