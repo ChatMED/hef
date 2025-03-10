@@ -2,76 +2,98 @@ package io.chatmed.evaluation_platform.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.chatmed.evaluation_platform.model.Answer;
-import io.chatmed.evaluation_platform.model.Model;
-import io.chatmed.evaluation_platform.model.Question;
-import io.chatmed.evaluation_platform.repository.AnswerRepository;
-import io.chatmed.evaluation_platform.repository.ModelRepository;
-import io.chatmed.evaluation_platform.repository.QuestionRepository;
+import io.chatmed.evaluation_platform.domain.Answer;
+import io.chatmed.evaluation_platform.domain.Question;
+import io.chatmed.evaluation_platform.domain.Version;
+import io.chatmed.evaluation_platform.exceptions.VersionNotFoundException;
+import io.chatmed.evaluation_platform.service.domain.AnswerService;
+import io.chatmed.evaluation_platform.service.domain.ModelService;
+import io.chatmed.evaluation_platform.service.domain.QuestionService;
+import io.chatmed.evaluation_platform.service.domain.VersionService;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class DataInitializer {
 
-    private final QuestionRepository questionRepository;
+    private final ModelService modelService;
+    private final QuestionService questionService;
+    private final AnswerService answerService;
+    private final VersionService versionService;
 
-    private final AnswerRepository answerRepository;
-
-    private final ModelRepository modelRepository;
-
-    public DataInitializer(QuestionRepository questionRepository, AnswerRepository answerRepository, ModelRepository modelRepository) {
-        this.questionRepository = questionRepository;
-        this.answerRepository = answerRepository;
-        this.modelRepository = modelRepository;
+    public DataInitializer(
+            ModelService modelService,
+            QuestionService questionService,
+            AnswerService answerService,
+            VersionService versionService
+    ) {
+        this.modelService = modelService;
+        this.questionService = questionService;
+        this.answerService = answerService;
+        this.versionService = versionService;
     }
 
+    private void initModels() throws IOException {
+        ClassPathResource resource = new ClassPathResource("data");
+        List<String> modelNames = Arrays.stream(Objects.requireNonNull(resource.getFile().listFiles()))
+                                        .filter(file -> file.getName().endsWith(".json"))
+                                        .map(file -> file.getName().replace(".json", ""))
+                                        .toList();
+        modelService.createNewModels(modelNames);
+    }
+
+    private Version initVersion() {
+        return versionService.save(Version.builder().createdAt(LocalDateTime.now()).build())
+                             .orElseThrow(VersionNotFoundException::new);
+    }
+
+
     @PostConstruct
-    public void initData() {
-        try {
-            String name = "mistral-7B-Instruct-v0.3";
-            ObjectMapper mapper = new ObjectMapper();
-            InputStream inputStream = getClass().getResourceAsStream("/data.json");
-            JsonNode rootNode = mapper.readTree(inputStream);
+    public void initData() throws IOException {
+        initModels();
+        Version version = initVersion();
+        ObjectMapper mapper = new ObjectMapper();
 
-            rootNode.fields().forEachRemaining(entry -> {
-                JsonNode node = entry.getValue();
-                Model m = null;
-                Optional<Model> model = modelRepository.findByName(name);
-                if (model.isEmpty()) {
-                    m = new Model();
-                    m.setName(name);
-                    modelRepository.save(m);
-                } else {
-                    m = model.get();
-                }
-                Question q = null;
-                Optional<Question> question = questionRepository.findByText(node.get("question").asText());
-                if (question.isEmpty()) {
-                    q = new Question();
-                    q.setText(node.get("question").asText());
-                    questionRepository.save(q);
-                } else {
-                    q = question.get();
-                }
-                Answer a = null;
-                Optional<Answer> answer = answerRepository.findByQuestionAndModel(q, m);
-                if (answer.isEmpty()) {
-                    a = new Answer();
-                    a.setQuestion(q);
-                    a.setModel(m);
-                    a.setText(node.get("answer").asText());
-                    answerRepository.save(a);
-                }
-            });
+        modelService.findAll().forEach(model -> {
+            try {
+                String fileName = "/data/" + model.getName() + ".json";
+                InputStream inputStream = getClass().getResourceAsStream(fileName);
+                JsonNode rootNode = mapper.readTree(inputStream);
 
-            System.out.println("Data loaded successfully!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                rootNode.fields().forEachRemaining(entry -> {
+                    Long key = Long.parseLong(entry.getKey());
+                    JsonNode node = entry.getValue();
+
+                    Question question = questionService.findByQuestionKey(key).orElseGet(Question::new);
+
+                    if (question.getId() == null) {
+                        question.setQuestionKey(key);
+                        question.setText(node.get("question").asText());
+                        question.setVersion(version);
+                        questionService.save(question);
+                    }
+
+                    Answer answer = answerService.findByQuestionAndModel(question, model)
+                                                 .orElseGet(Answer::new);
+                    if (answer.getId() == null) {
+                        answer.setAnswerKey(key);
+                        answer.setText(node.get("answer").asText());
+                        answer.setQuestion(question);
+                        answer.setModel(model);
+                        answerService.save(answer);
+                    }
+                });
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
