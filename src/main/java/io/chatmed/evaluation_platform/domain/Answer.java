@@ -17,7 +17,7 @@ public class Answer {
     private Long id;
 
     private Long answerKey;
-
+    @Column(columnDefinition="TEXT")
     private String text;
 
     @ManyToOne
