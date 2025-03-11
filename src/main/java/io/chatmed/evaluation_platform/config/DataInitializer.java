@@ -11,13 +11,14 @@ import io.chatmed.evaluation_platform.service.domain.ModelService;
 import io.chatmed.evaluation_platform.service.domain.QuestionService;
 import io.chatmed.evaluation_platform.service.domain.VersionService;
 import jakarta.annotation.PostConstruct;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,25 +29,34 @@ public class DataInitializer {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final VersionService versionService;
+    private final ObjectMapper objectMapper;
 
     public DataInitializer(
             ModelService modelService,
             QuestionService questionService,
             AnswerService answerService,
-            VersionService versionService
+            VersionService versionService,
+            ObjectMapper objectMapper
     ) {
         this.modelService = modelService;
         this.questionService = questionService;
         this.answerService = answerService;
         this.versionService = versionService;
+        this.objectMapper = objectMapper;
     }
 
     private void initModels() throws IOException {
-        ClassPathResource resource = new ClassPathResource("data");
-        List<String> modelNames = Arrays.stream(Objects.requireNonNull(resource.getFile().listFiles()))
-                                        .filter(file -> file.getName().endsWith(".json"))
-                                        .map(file -> file.getName().replace(".json", ""))
-                                        .toList();
+        List<String> modelNames = new ArrayList<>();
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource[] resources = resolver.getResources("classpath:data/*.json");
+
+        for (Resource resource : resources) {
+            String fileName = Objects.requireNonNull(resource.getFilename());
+            if (fileName.endsWith(".json")) {
+                modelNames.add(fileName.replace(".json", ""));
+            }
+        }
         modelService.createNewModels(modelNames);
     }
 
@@ -55,45 +65,47 @@ public class DataInitializer {
                              .orElseThrow(VersionNotFoundException::new);
     }
 
-
     @PostConstruct
     public void initData() throws IOException {
         initModels();
         Version version = initVersion();
-        ObjectMapper mapper = new ObjectMapper();
 
-        modelService.findAll().forEach(model -> {
-            try {
-                String fileName = "/data/" + model.getName() + ".json";
-                InputStream inputStream = getClass().getResourceAsStream(fileName);
-                JsonNode rootNode = mapper.readTree(inputStream);
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource[] resources = resolver.getResources("classpath:data/*.json");
 
-                rootNode.fields().forEachRemaining(entry -> {
-                    Long key = Long.parseLong(entry.getKey());
-                    JsonNode node = entry.getValue();
+        for (Resource resource : resources) {
+            try (InputStream inputStream = resource.getInputStream()) {
+                JsonNode rootNode = objectMapper.readTree(inputStream);
+                String modelName = Objects.requireNonNull(resource.getFilename()).replace(".json", "");
 
-                    Question question = questionService.findByQuestionKey(key).orElseGet(Question::new);
+                modelService.findByName(modelName).ifPresent(model -> {
+                    rootNode.fields().forEachRemaining(entry -> {
+                        Long key = Long.parseLong(entry.getKey());
+                        JsonNode node = entry.getValue();
 
-                    if (question.getId() == null) {
-                        question.setQuestionKey(key);
-                        question.setText(node.get("question").asText());
-                        question.setVersion(version);
-                        questionService.save(question);
-                    }
+                        Question question = questionService.findByQuestionKey(key).orElseGet(Question::new);
+                        if (question.getId() == null) {
+                            question.setQuestionKey(key);
+                            question.setText(node.get("question").asText());
+                            question.setVersion(version);
+                            questionService.save(question);
+                        }
 
-                    Answer answer = answerService.findByQuestionAndModel(question, model)
-                                                 .orElseGet(Answer::new);
-                    if (answer.getId() == null) {
-                        answer.setAnswerKey(key);
-                        answer.setText(node.get("answer").asText());
-                        answer.setQuestion(question);
-                        answer.setModel(model);
-                        answerService.save(answer);
-                    }
+                        Answer answer = answerService.findByQuestionAndModel(question, model)
+                                                     .orElseGet(Answer::new);
+                        if (answer.getId() == null) {
+                            answer.setAnswerKey(key);
+                            answer.setText(node.get("answer").asText());
+                            answer.setQuestion(question);
+                            answer.setModel(model);
+                            answerService.save(answer);
+                        }
+                    });
                 });
+
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error reading resource: " + resource.getFilename(), e);
             }
-        });
+        }
     }
 }
