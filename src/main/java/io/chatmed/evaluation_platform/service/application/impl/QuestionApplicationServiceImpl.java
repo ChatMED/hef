@@ -25,7 +25,8 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     private final UserService userService;
 
     public QuestionApplicationServiceImpl(
-            QuestionService questionService, AnswerService answerService,
+            QuestionService questionService,
+            AnswerService answerService,
             EvaluationService evaluationService,
             UserService userService
     ) {
@@ -64,16 +65,17 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
                                .orElseThrow(ResourceNotFoundException::new);
         Question questionToEvaluate = questionService.findQuestionToEvaluate(user)
                                                      .orElseThrow(ResourceNotFoundException::new);
-        Answer answerForQuestion = answerService.findAnswerToEvaluate(questionToEvaluate, user)
+        Answer answerForQuestion = answerService.findNextAnswerToEvaluate(questionToEvaluate, user)
                                                 .orElseThrow(ResourceNotFoundException::new);
 
-        List<Model> evaluatedModels = evaluationService.findAllEvaluationsForQuestionAndUser(
-                                                               questionToEvaluate,
-                                                               user
-                                                       )
-                                                       .stream()
-                                                       .map(evaluation -> evaluation.getAnswer().getModel())
-                                                       .toList();
+        List<Model> evaluatedModels =
+                evaluationService.findAllEvaluationsForQuestionAndUser(
+                                         questionToEvaluate,
+                                         user
+                                 )
+                                 .stream()
+                                 .map(evaluation -> evaluation.getAnswer().getModel())
+                                 .toList();
 
         return new QuestionAnswerPairDto(
                 QuestionDto.from(questionToEvaluate),

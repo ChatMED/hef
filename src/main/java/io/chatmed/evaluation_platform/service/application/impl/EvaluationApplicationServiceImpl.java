@@ -24,7 +24,8 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
     public EvaluationApplicationServiceImpl(
             EvaluationService evaluationService,
             AnswerService answerService,
-            UserService userService, ModelService modelService,
+            UserService userService,
+            ModelService modelService,
             QuestionService questionService
     ) {
         this.evaluationService = evaluationService;
@@ -49,6 +50,15 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
         updateNextQuestionForUserIfAllModelsEvaluated(answer.getQuestion(), user);
     }
 
+    @Override
+    public EvaluationDto getEvaluationForAnswerAndUser(Long answerId, String username) {
+        Answer answer = answerService.findById(answerId).orElseThrow(ResourceNotFoundException::new);
+        User user = userService.findByUsername(username).orElseThrow(ResourceNotFoundException::new);
+        return evaluationService.findEvaluationForAnswerAndUser(answer, user)
+                                .map(EvaluationDto::fromEvaluation)
+                                .orElseThrow(ResourceNotFoundException::new);
+    }
+
     private void updateNextQuestionForUserIfAllModelsEvaluated(Question question, User user) {
         List<Evaluation> evaluations = evaluationService.findAllEvaluationsForQuestionAndUser(question, user);
         boolean allModelsEvaluated = evaluations.size() == modelService.countAllModels();
@@ -58,24 +68,4 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
                            .ifPresent(nextQuestion -> userService.updateNextQuestion(user, nextQuestion));
         }
     }
-
-
-
-//        Evaluation evaluation = new Evaluation();
-//        evaluation.setAnswer(answer);
-//
-//        evaluation.setAccuracy(answerDto.getAccuracy());
-//        evaluation.setComprehensiveness(answerDto.getComprehensiveness());
-//        evaluation.setClarity(answerDto.getClarity());
-//        evaluation.setEmpathy(answerDto.getEmpathy());
-//        evaluation.setBias(answerDto.getBias());
-//        evaluation.setHarm(answerDto.getHarm());
-//        evaluation.setTrust(answerDto.getTrust());
-//
-//        evaluation.setComment(answerDto.getComment());
-//        evaluation.setUser(answerDto.getUser());
-//
-//
-//        return scoreRepository.save(evaluation);
-//    }
 }

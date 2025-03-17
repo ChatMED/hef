@@ -40,7 +40,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public Optional<Answer> findAnswerToEvaluate(Question question, User user) {
+    public Optional<Answer> findNextAnswerToEvaluate(Question question, User user) {
         List<Evaluation> evaluations = evaluationService.findAllEvaluationsForQuestionAndUser(question, user);
         List<Model> models = modelService.findAll();
 
@@ -52,6 +52,8 @@ public class AnswerServiceImpl implements AnswerService {
                                 .findFirst().orElseThrow(ResourceNotFoundException::new);
         return answerRepository.findByQuestionAndModel(question, nextModel);
     }
+
+
 
     @Transactional
     @Override

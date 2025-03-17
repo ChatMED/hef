@@ -32,10 +32,10 @@ public class QuestionController {
         return questionApplicationService.findAll();
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/next/{username}")
     @Operation(
             summary = "Get next question for user to evaluate",
-            description = "Retrieves the next question with answers for user to evaluate."
+            description = "Retrieves the next question with answer for user to evaluate."
     )
     public ResponseEntity<QuestionAnswerPairDto> getQuestionToEvaluate(@PathVariable String username) {
         return ResponseEntity.ok(questionApplicationService.findQuestionToEvaluate(UserDto.of(username)));
@@ -49,10 +49,4 @@ public class QuestionController {
     public ResponseEntity<Long> getQuestionsCount() {
         return ResponseEntity.ok(questionApplicationService.getQuestionsCount());
     }
-
-//    @GetMapping("/results")
-//    @Operation(summary = "Get question results", description = "Retrieves the results for all questions.")
-//    public List<QuestionResultsDto> getResults() {
-//        return questionApplicationService.getResults();
-//    }
 }

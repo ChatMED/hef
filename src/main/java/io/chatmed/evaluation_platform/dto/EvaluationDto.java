@@ -37,4 +37,23 @@ public record EvaluationDto(
                 perceivedUsefulness
         )).comment(comment).user(user).answer(answer).question(answer.getQuestion()).build();
     }
+
+    public static EvaluationDto fromEvaluation(Evaluation evaluation) {
+        return new EvaluationDto(
+                evaluation.getEvaluationMetrics().accuracy(),
+                evaluation.getEvaluationMetrics().comprehensiveness(),
+                evaluation.getEvaluationMetrics().clarity(),
+                evaluation.getEvaluationMetrics().empathy(),
+                evaluation.getEvaluationMetrics().bias(),
+                evaluation.getEvaluationMetrics().harm(),
+                evaluation.getEvaluationMetrics().trust(),
+                evaluation.getEvaluationMetrics().relevance(),
+                evaluation.getEvaluationMetrics().currency(),
+                evaluation.getEvaluationMetrics().securityAndPrivacy(),
+                evaluation.getEvaluationMetrics().perceivedUsefulness(),
+                evaluation.getComment(),
+                evaluation.getUser().getUsername(),
+                evaluation.getAnswer().getId()
+        );
+    }
 }

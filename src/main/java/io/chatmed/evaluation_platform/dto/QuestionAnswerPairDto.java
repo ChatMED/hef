@@ -1,6 +1,5 @@
 package io.chatmed.evaluation_platform.dto;
 
-
 import java.util.List;
 
 public record QuestionAnswerPairDto(

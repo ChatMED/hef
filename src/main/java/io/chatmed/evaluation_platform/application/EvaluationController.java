@@ -28,4 +28,20 @@ public class EvaluationController {
         evaluationApplicationService.createOrUpdateEvaluation(evaluationDto);
         return ResponseEntity.ok().build();
     }
+
+
+    @Operation(
+            summary = "Get evaluation by answer and user",
+            description = "Returns an evaluation in the system, using the answer and user as parameters."
+    )
+    @GetMapping()
+    public ResponseEntity<EvaluationDto> getEvaluation(
+            @RequestParam Long answer,
+            @RequestParam String username
+    ) {
+        return ResponseEntity.ok(evaluationApplicationService.getEvaluationForAnswerAndUser(
+                answer,
+                username
+        ));
+    }
 }
