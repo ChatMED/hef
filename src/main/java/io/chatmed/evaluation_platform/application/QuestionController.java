@@ -1,7 +1,7 @@
 package io.chatmed.evaluation_platform.application;
 
 import io.chatmed.evaluation_platform.dto.QuestionDto;
-import io.chatmed.evaluation_platform.dto.QuestionAnswerPairDto;
+import io.chatmed.evaluation_platform.dto.QuestionDetailsDto;
 import io.chatmed.evaluation_platform.dto.UserDto;
 import io.chatmed.evaluation_platform.service.application.QuestionApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,8 +37,11 @@ public class QuestionController {
             summary = "Get next question for user to evaluate",
             description = "Retrieves the next question with answer for user to evaluate."
     )
-    public ResponseEntity<QuestionAnswerPairDto> getQuestionToEvaluate(@PathVariable String username) {
-        return ResponseEntity.ok(questionApplicationService.findQuestionToEvaluate(UserDto.of(username)));
+    public ResponseEntity<QuestionDetailsDto> getQuestionToEvaluate(
+            @PathVariable String username,
+            @RequestParam(required = false) Long modelId
+    ) {
+        return ResponseEntity.ok(questionApplicationService.findQuestionToEvaluate(UserDto.of(username), modelId));
     }
 
     @GetMapping("/count")

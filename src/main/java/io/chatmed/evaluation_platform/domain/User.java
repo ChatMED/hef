@@ -22,4 +22,7 @@ public class User {
 
     @ManyToOne
     private Question nextQuestion;
+
+    @ManyToOne
+    private Question currentQuestion;
 }

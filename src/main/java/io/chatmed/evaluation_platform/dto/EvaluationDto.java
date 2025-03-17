@@ -39,6 +39,8 @@ public record EvaluationDto(
     }
 
     public static EvaluationDto fromEvaluation(Evaluation evaluation) {
+        if (evaluation == null) return null;
+
         return new EvaluationDto(
                 evaluation.getEvaluationMetrics().accuracy(),
                 evaluation.getEvaluationMetrics().comprehensiveness(),

@@ -56,4 +56,9 @@ public class ModelServiceImpl implements ModelService {
     public Long countAllModels() {
         return modelRepository.count();
     }
+
+    @Override
+    public Optional<Model> findById(Long modelId) {
+        return Optional.ofNullable(modelId).flatMap(modelRepository::findById);
+    }
 }

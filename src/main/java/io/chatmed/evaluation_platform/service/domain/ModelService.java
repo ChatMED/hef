@@ -9,6 +9,8 @@ public interface ModelService {
 
     Optional<Model> findByName(String name);
 
+    Optional<Model> findById(Long modelId);
+
     List<Model> findAll();
 
     List<Model> findByNameIn(List<String> names);

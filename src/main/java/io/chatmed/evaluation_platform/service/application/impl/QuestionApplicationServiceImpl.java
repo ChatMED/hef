@@ -1,16 +1,10 @@
 package io.chatmed.evaluation_platform.service.application.impl;
 
-import io.chatmed.evaluation_platform.domain.Answer;
-import io.chatmed.evaluation_platform.domain.Model;
-import io.chatmed.evaluation_platform.domain.Question;
-import io.chatmed.evaluation_platform.domain.User;
+import io.chatmed.evaluation_platform.domain.*;
 import io.chatmed.evaluation_platform.dto.*;
 import io.chatmed.evaluation_platform.exceptions.ResourceNotFoundException;
 import io.chatmed.evaluation_platform.service.application.QuestionApplicationService;
-import io.chatmed.evaluation_platform.service.domain.AnswerService;
-import io.chatmed.evaluation_platform.service.domain.EvaluationService;
-import io.chatmed.evaluation_platform.service.domain.QuestionService;
-import io.chatmed.evaluation_platform.service.domain.UserService;
+import io.chatmed.evaluation_platform.service.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,17 +17,19 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     private final AnswerService answerService;
     private final EvaluationService evaluationService;
     private final UserService userService;
+    private final ModelService modelService;
 
     public QuestionApplicationServiceImpl(
             QuestionService questionService,
             AnswerService answerService,
             EvaluationService evaluationService,
-            UserService userService
+            UserService userService, ModelService modelService
     ) {
         this.questionService = questionService;
         this.answerService = answerService;
         this.evaluationService = evaluationService;
         this.userService = userService;
+        this.modelService = modelService;
     }
 
     @Override
@@ -60,13 +56,20 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     }
 
     @Override
-    public QuestionAnswerPairDto findQuestionToEvaluate(UserDto userDto) {
+    public QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long modelId) {
         User user = userService.findByUsername(userDto.username())
                                .orElseThrow(ResourceNotFoundException::new);
+
         Question questionToEvaluate = questionService.findQuestionToEvaluate(user)
                                                      .orElseThrow(ResourceNotFoundException::new);
-        Answer answerForQuestion = answerService.findNextAnswerToEvaluate(questionToEvaluate, user)
-                                                .orElseThrow(ResourceNotFoundException::new);
+
+        Answer answerForQuestion = modelService.findById(modelId).isPresent() ?
+                answerService.findByQuestionAndModel(
+                        questionToEvaluate,
+                        modelService.findById(modelId).get()
+                ).orElseThrow(ResourceNotFoundException::new) :
+                answerService.findNextAnswerToEvaluate(questionToEvaluate, user)
+                             .orElseThrow(ResourceNotFoundException::new);
 
         List<Model> evaluatedModels =
                 evaluationService.findAllEvaluationsForQuestionAndUser(
@@ -77,12 +80,15 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
                                  .map(evaluation -> evaluation.getAnswer().getModel())
                                  .toList();
 
-        return new QuestionAnswerPairDto(
+        Evaluation evaluation = evaluationService.findEvaluationForAnswerAndUser(answerForQuestion, user).orElse(null);
+
+        return new QuestionDetailsDto(
                 QuestionDto.from(questionToEvaluate),
                 AnswerDto.from(answerForQuestion),
                 ModelDto.from(evaluatedModels),
                 questionService.countEvaluatedQuestions(questionToEvaluate.getId()),
-                questionService.countRemainingQuestions(questionToEvaluate.getId())
+                questionService.countRemainingQuestions(questionToEvaluate.getId()),
+                EvaluationDto.fromEvaluation(evaluation)
         );
     }
 }
