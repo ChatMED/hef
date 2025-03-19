@@ -61,4 +61,9 @@ public class ModelServiceImpl implements ModelService {
     public Optional<Model> findById(Long modelId) {
         return Optional.ofNullable(modelId).flatMap(modelRepository::findById);
     }
+
+    @Override
+    public Optional<Model> findFirstModel() {
+        return modelRepository.findFirstByOrderByIdAsc();
+    }
 }

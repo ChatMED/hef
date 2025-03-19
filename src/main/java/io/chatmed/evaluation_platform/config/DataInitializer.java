@@ -25,6 +25,9 @@ import java.util.Objects;
 @Component
 public class DataInitializer {
 
+    //    private static final String DATA_LOCATION = "classpath:data/*.json";
+    private static final String DATA_LOCATION = "classpath:test/*.json";
+
     private final ModelService modelService;
     private final QuestionService questionService;
     private final AnswerService answerService;
@@ -49,7 +52,7 @@ public class DataInitializer {
         List<String> modelNames = new ArrayList<>();
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources("classpath:data/*.json");
+        Resource[] resources = resolver.getResources(DATA_LOCATION);
 
         for (Resource resource : resources) {
             String fileName = Objects.requireNonNull(resource.getFilename());
@@ -71,7 +74,7 @@ public class DataInitializer {
         Version version = initVersion();
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources("classpath:data/*.json");
+        Resource[] resources = resolver.getResources(DATA_LOCATION);
 
         for (Resource resource : resources) {
             try (InputStream inputStream = resource.getInputStream()) {

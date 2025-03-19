@@ -31,9 +31,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> updateNextQuestion(User user, Question question) {
+    public Optional<User> updateCurrentAndNextQuestion(User user, Question question) {
         if (findByUsername(user.getUsername()).isPresent()) {
+            user.setCurrentQuestion(question);
             user.setNextQuestion(question);
+            return Optional.of(userRepository.save(user));
+        }
+        return Optional.of(user);
+    }
+
+    @Override
+    public Optional<User> updateCurrentQuestion(User user, Question question) {
+        if (findByUsername(user.getUsername()).isPresent()) {
+            user.setCurrentQuestion(question);
             return Optional.of(userRepository.save(user));
         }
         return Optional.of(user);

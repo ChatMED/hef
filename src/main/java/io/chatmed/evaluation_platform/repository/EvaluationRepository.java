@@ -14,4 +14,6 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     Optional<Evaluation> findByAnswerAndUser(Answer answer, User user);
 
     List<Evaluation> findAllByQuestionAndUser(Question question, User user);
+
+    List<Evaluation> findAllByUser(User user);
 }

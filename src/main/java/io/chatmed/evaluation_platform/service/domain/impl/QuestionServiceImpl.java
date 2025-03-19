@@ -1,26 +1,39 @@
 package io.chatmed.evaluation_platform.service.domain.impl;
 
+import io.chatmed.evaluation_platform.domain.Evaluation;
 import io.chatmed.evaluation_platform.domain.Question;
 import io.chatmed.evaluation_platform.domain.User;
 import io.chatmed.evaluation_platform.exceptions.ResourceNotFoundException;
 import io.chatmed.evaluation_platform.repository.QuestionRepository;
+import io.chatmed.evaluation_platform.service.domain.EvaluationService;
+import io.chatmed.evaluation_platform.service.domain.ModelService;
 import io.chatmed.evaluation_platform.service.domain.QuestionService;
 import io.chatmed.evaluation_platform.service.domain.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
     private final UserService userService;
+    private final ModelService modelService;
+    private final EvaluationService evaluationService;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository, UserService userService) {
+    public QuestionServiceImpl(
+            QuestionRepository questionRepository,
+            UserService userService,
+            ModelService modelService, EvaluationService evaluationService
+    ) {
         this.questionRepository = questionRepository;
         this.userService = userService;
+        this.modelService = modelService;
+        this.evaluationService = evaluationService;
     }
 
     @Override
@@ -34,13 +47,22 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Optional<Question> findFirstQuestion() {
+        return questionRepository.findFirstByOrderById();
+    }
+
+    @Override
     public Optional<Question> findQuestionToEvaluate(User user) {
-        if (user.getNextQuestion() == null) {
-            Question firstAvailableQuestion = questionRepository.findFirstByOrderById()
-                                                                .orElseThrow(ResourceNotFoundException::new);
-            userService.updateNextQuestion(user, firstAvailableQuestion);
+        if (user.getCurrentQuestion() == null || user.getNextQuestion() == null) {
+            Question firstAvailableQuestion = findFirstQuestion().orElseThrow(ResourceNotFoundException::new);
+            userService.updateCurrentAndNextQuestion(user, firstAvailableQuestion);
         }
-        return findById(user.getNextQuestion().getId());
+        return findById(user.getCurrentQuestion().getId());
+    }
+
+    @Override
+    public Optional<Question> findPreviousQuestion(Long id) {
+        return questionRepository.findFirstByIdLessThanOrderByIdDesc(id);
     }
 
     @Override
@@ -65,12 +87,22 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Long countEvaluatedQuestions(Long id) {
-        return questionRepository.countQuestionsEvaluated(id);
+    public Long countEvaluatedQuestions(User user) {
+        List<Evaluation> evaluations = evaluationService.findAllEvaluationsForUser(user);
+        Map<Question, List<Evaluation>> evaluatedQuestions = evaluations.stream()
+                                                                        .collect(Collectors.groupingBy(
+                                                                                Evaluation::getQuestion,
+                                                                                Collectors.toList()
+                                                                        ));
+
+        return evaluatedQuestions.entrySet()
+                                 .stream()
+                                 .filter(entry -> entry.getValue().size() == modelService.countAllModels())
+                                 .count();
     }
 
     @Override
-    public Long countRemainingQuestions(Long id) {
-        return questionRepository.countRemainingQuestions(id);
+    public Long countRemainingQuestions(User user) {
+        return questionRepository.countAllBy() - countEvaluatedQuestions(user);
     }
 }

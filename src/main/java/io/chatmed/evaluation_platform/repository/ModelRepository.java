@@ -13,4 +13,6 @@ public interface ModelRepository extends JpaRepository<Model, Long> {
     List<Model> findByNameIn(List<String> names);
 
     List<Model> findAllByOrderByIdAsc();
+
+    Optional<Model> findFirstByOrderByIdAsc();
 }

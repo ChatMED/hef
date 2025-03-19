@@ -1,7 +1,7 @@
 package io.chatmed.evaluation_platform.service.application;
 
-import io.chatmed.evaluation_platform.dto.QuestionDto;
 import io.chatmed.evaluation_platform.dto.QuestionDetailsDto;
+import io.chatmed.evaluation_platform.dto.QuestionDto;
 import io.chatmed.evaluation_platform.dto.UserDto;
 
 import java.util.List;
@@ -18,4 +18,8 @@ public interface QuestionApplicationService {
     Long getQuestionsCount();
 
     QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long modelId);
+
+    QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto);
+
+    QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto);
 }

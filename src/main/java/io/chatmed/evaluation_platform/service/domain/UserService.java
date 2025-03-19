@@ -11,5 +11,7 @@ public interface UserService {
 
     Optional<User> login(User user);
 
-    Optional<User> updateNextQuestion(User user, Question question);
+    Optional<User> updateCurrentAndNextQuestion(User user, Question question);
+
+    Optional<User> updateCurrentQuestion(User user, Question question);
 }

@@ -11,6 +11,8 @@ public interface ModelService {
 
     Optional<Model> findById(Long modelId);
 
+    Optional<Model> findFirstModel();
+
     List<Model> findAll();
 
     List<Model> findByNameIn(List<String> names);

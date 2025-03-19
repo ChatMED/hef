@@ -1,7 +1,6 @@
 package io.chatmed.evaluation_platform.service.domain.impl;
 
 import io.chatmed.evaluation_platform.domain.*;
-import io.chatmed.evaluation_platform.exceptions.ResourceNotFoundException;
 import io.chatmed.evaluation_platform.repository.AnswerRepository;
 import io.chatmed.evaluation_platform.service.domain.AnswerService;
 import io.chatmed.evaluation_platform.service.domain.EvaluationService;
@@ -46,13 +45,13 @@ public class AnswerServiceImpl implements AnswerService {
 
         Model nextModel = models.stream()
                                 .filter(model -> evaluations.stream()
-                                                            .map(evaluation -> evaluation.getAnswer()
-                                                                                         .getModel())
+                                                            .map(evaluation -> evaluation.getAnswer().getModel())
                                                             .noneMatch(model::equals))
-                                .findFirst().orElseThrow(ResourceNotFoundException::new);
+                                .findFirst()
+                                .orElseGet(() -> models.get(0));
+
         return answerRepository.findByQuestionAndModel(question, nextModel);
     }
-
 
 
     @Transactional

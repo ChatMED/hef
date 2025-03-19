@@ -23,13 +23,11 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
             QuestionService questionService,
             AnswerService answerService,
             EvaluationService evaluationService,
-            UserService userService, ModelService modelService
+            UserService userService,
+            ModelService modelService
     ) {
-        this.questionService = questionService;
-        this.answerService = answerService;
-        this.evaluationService = evaluationService;
-        this.userService = userService;
-        this.modelService = modelService;
+        this.questionService = questionService; this.answerService = answerService;
+        this.evaluationService = evaluationService; this.userService = userService; this.modelService = modelService;
     }
 
     @Override
@@ -57,38 +55,86 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
 
     @Override
     public QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long modelId) {
-        User user = userService.findByUsername(userDto.username())
-                               .orElseThrow(ResourceNotFoundException::new);
+        User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
 
         Question questionToEvaluate = questionService.findQuestionToEvaluate(user)
                                                      .orElseThrow(ResourceNotFoundException::new);
 
-        Answer answerForQuestion = modelService.findById(modelId).isPresent() ?
-                answerService.findByQuestionAndModel(
-                        questionToEvaluate,
-                        modelService.findById(modelId).get()
-                ).orElseThrow(ResourceNotFoundException::new) :
-                answerService.findNextAnswerToEvaluate(questionToEvaluate, user)
-                             .orElseThrow(ResourceNotFoundException::new);
+        Answer answerForQuestion = modelService.findById(modelId)
+                                               .map(model -> answerService.findByQuestionAndModel(
+                                                       questionToEvaluate,
+                                                       model
+                                               ).orElseThrow(ResourceNotFoundException::new))
+                                               .orElseGet(() -> answerService.findNextAnswerToEvaluate(
+                                                                                     questionToEvaluate,
+                                                                                     user
+                                                                             )
+                                                                             .orElseThrow(ResourceNotFoundException::new));
 
-        List<Model> evaluatedModels =
-                evaluationService.findAllEvaluationsForQuestionAndUser(
-                                         questionToEvaluate,
-                                         user
-                                 )
-                                 .stream()
-                                 .map(evaluation -> evaluation.getAnswer().getModel())
-                                 .toList();
-
+        List<Model> evaluatedModels = findEvaluatedModelsForQuestionAndUser(questionToEvaluate, user);
         Evaluation evaluation = evaluationService.findEvaluationForAnswerAndUser(answerForQuestion, user).orElse(null);
 
         return new QuestionDetailsDto(
                 QuestionDto.from(questionToEvaluate),
                 AnswerDto.from(answerForQuestion),
                 ModelDto.from(evaluatedModels),
-                questionService.countEvaluatedQuestions(questionToEvaluate.getId()),
-                questionService.countRemainingQuestions(questionToEvaluate.getId()),
+                questionService.countEvaluatedQuestions(user),
+                questionService.countRemainingQuestions(user),
                 EvaluationDto.fromEvaluation(evaluation)
         );
     }
+
+    private List<Model> findEvaluatedModelsForQuestionAndUser(Question questionToEvaluate, User user) {
+        return evaluationService.findAllEvaluationsForQuestionAndUser(questionToEvaluate, user)
+                                .stream()
+                                .map(evaluation -> evaluation.getAnswer().getModel())
+                                .toList();
+    }
+
+    @Override
+    public QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto) {
+        User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
+        Question currentQuestion = user.getCurrentQuestion();
+        Question previousQuestion = questionService.findFirstQuestion().isPresent() &&
+                questionService.findFirstQuestion().get().getId().equals(currentQuestion.getId()) ?
+                currentQuestion : questionService.findPreviousQuestion(user.getCurrentQuestion().getId())
+                                                 .orElseThrow(ResourceNotFoundException::new);
+
+        userService.updateCurrentQuestion(user, previousQuestion);
+        return setQuestionForUser(user, previousQuestion, currentQuestion);
+    }
+
+    @Override
+    public QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto) {
+        User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
+        Question currentQuestion = user.getCurrentQuestion();
+        Question nextToEvaluateQuestion = user.getNextQuestion();
+
+        Question nextQuestion = currentQuestion.getId() < nextToEvaluateQuestion.getId() ?
+                questionService.findNextQuestion(user.getCurrentQuestion().getId())
+                               .orElseThrow(ResourceNotFoundException::new) :
+                currentQuestion;
+
+        userService.updateCurrentQuestion(user, nextQuestion);
+        return setQuestionForUser(user, nextQuestion, currentQuestion);
+    }
+
+    private QuestionDetailsDto setQuestionForUser(User user, Question newQuestion, Question oldQuestion) {
+        Answer answerForQuestion = modelService.findFirstModel()
+                                               .map(model -> answerService.findByQuestionAndModel(newQuestion, model)
+                                                                          .orElseThrow(ResourceNotFoundException::new))
+                                               .orElseGet(() -> null);
+        List<Model> evaluatedModels = findEvaluatedModelsForQuestionAndUser(newQuestion, user);
+        Evaluation evaluation = evaluationService.findEvaluationForAnswerAndUser(answerForQuestion, user).orElse(null);
+
+        return new QuestionDetailsDto(
+                QuestionDto.from(newQuestion),
+                AnswerDto.from(answerForQuestion),
+                ModelDto.from(evaluatedModels),
+                questionService.countEvaluatedQuestions(user),
+                questionService.countRemainingQuestions(user),
+                EvaluationDto.fromEvaluation(evaluation)
+        );
+    }
+
 }

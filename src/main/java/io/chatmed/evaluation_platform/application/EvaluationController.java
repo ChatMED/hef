@@ -24,8 +24,11 @@ public class EvaluationController {
             description = "Saves an evaluation in the system, or updates if existing."
     )
     @PostMapping
-    public ResponseEntity<Void> createOrUpdateEvaluation(@RequestBody EvaluationDto evaluationDto) {
-        evaluationApplicationService.createOrUpdateEvaluation(evaluationDto);
+    public ResponseEntity<Void> createOrUpdateEvaluation(
+            @RequestBody EvaluationDto evaluationDto,
+            @RequestParam(required = false) boolean goToNextUnevaluatedQuestion
+    ) {
+        evaluationApplicationService.createOrUpdateEvaluation(evaluationDto, goToNextUnevaluatedQuestion);
         return ResponseEntity.ok().build();
     }
 

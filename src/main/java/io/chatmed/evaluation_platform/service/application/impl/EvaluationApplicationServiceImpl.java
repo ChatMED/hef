@@ -36,7 +36,7 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
     }
 
     @Override
-    public void createOrUpdateEvaluation(EvaluationDto evaluationDto) {
+    public void createOrUpdateEvaluation(EvaluationDto evaluationDto, boolean goToNextUnevaluatedQuestion) {
         Answer answer = answerService.findById(evaluationDto.answer())
                                      .orElseThrow(ResourceNotFoundException::new);
         User user = userService.findByUsername(evaluationDto.username())
@@ -45,9 +45,9 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
         Evaluation newEvaluation = evaluationDto.toEvaluation(user, answer);
         evaluationService.findEvaluationForAnswerAndUser(answer, user)
                          .ifPresent(existingEvaluation -> newEvaluation.setId(existingEvaluation.getId()));
-
         evaluationService.save(newEvaluation);
-        updateNextQuestionForUserIfAllModelsEvaluated(answer.getQuestion(), user);
+
+        if (goToNextUnevaluatedQuestion) updateNextQuestionForUserIfAllModelsEvaluated(answer.getQuestion(), user);
     }
 
     @Override
@@ -64,8 +64,14 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
         boolean allModelsEvaluated = evaluations.size() == modelService.countAllModels();
 
         if (allModelsEvaluated) {
-            questionService.findNextQuestion(question.getId())
-                           .ifPresent(nextQuestion -> userService.updateNextQuestion(user, nextQuestion));
+            questionService.findNextQuestion(question.getId()).ifPresent(nextQuestion -> {
+                userService.updateCurrentAndNextQuestion(
+                        user,
+                        nextQuestion.getId() >= user.getNextQuestion().getId()
+                                ? nextQuestion
+                                : user.getNextQuestion()
+                );
+            });
         }
     }
 }

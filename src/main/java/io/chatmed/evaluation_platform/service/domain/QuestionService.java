@@ -12,7 +12,11 @@ public interface QuestionService {
 
     List<Question> findAll();
 
+    Optional<Question> findFirstQuestion();
+
     Optional<Question> findQuestionToEvaluate(User user);
+
+    Optional<Question> findPreviousQuestion(Long id);
 
     Optional<Question> findNextQuestion(Long id);
 
@@ -22,7 +26,7 @@ public interface QuestionService {
 
     Optional<Question> save(Question question);
 
-    Long countEvaluatedQuestions(Long id);
+    Long countEvaluatedQuestions(User user);
 
-    Long countRemainingQuestions(Long id);
+    Long countRemainingQuestions(User user);
 }
