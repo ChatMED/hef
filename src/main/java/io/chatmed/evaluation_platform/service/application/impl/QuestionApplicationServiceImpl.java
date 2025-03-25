@@ -55,7 +55,12 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
 
     @Override
     public QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long modelId) {
-        User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
+        if (userDto.username() == null ||
+                userDto.username().isEmpty() ||
+                userDto.username().equals("null")) throw new ResourceNotFoundException();
+        User user = userService.findByUsername(userDto.username())
+                               .orElseGet(() -> userService.login(userDto.toUser())
+                                                           .orElseThrow(ResourceNotFoundException::new));
 
         Question questionToEvaluate = questionService.findQuestionToEvaluate(user)
                                                      .orElseThrow(ResourceNotFoundException::new);
@@ -95,10 +100,13 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     public QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto) {
         User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
         Question currentQuestion = user.getCurrentQuestion();
-        Question previousQuestion = questionService.findFirstQuestion().isPresent() &&
-                questionService.findFirstQuestion().get().getId().equals(currentQuestion.getId()) ?
-                currentQuestion : questionService.findPreviousQuestion(user.getCurrentQuestion().getId())
-                                                 .orElseThrow(ResourceNotFoundException::new);
+        Question previousQuestion = questionService.findFirstQuestion()
+                                                   .isPresent() && questionService.findFirstQuestion()
+                                                                                  .get()
+                                                                                  .getId()
+                                                                                  .equals(currentQuestion.getId()) ?
+                currentQuestion : questionService.findPreviousQuestion(
+                user.getCurrentQuestion().getId()).orElseThrow(ResourceNotFoundException::new);
 
         userService.updateCurrentQuestion(user, previousQuestion);
         return setQuestionForUser(user, previousQuestion, currentQuestion);
@@ -107,13 +115,12 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     @Override
     public QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto) {
         User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
-        Question currentQuestion = user.getCurrentQuestion();
-        Question nextToEvaluateQuestion = user.getNextQuestion();
+        Question currentQuestion = user.getCurrentQuestion(); Question nextToEvaluateQuestion = user.getNextQuestion();
 
         Question nextQuestion = currentQuestion.getId() < nextToEvaluateQuestion.getId() ?
-                questionService.findNextQuestion(user.getCurrentQuestion().getId())
-                               .orElseThrow(ResourceNotFoundException::new) :
-                currentQuestion;
+                questionService.findNextQuestion(
+                                       user.getCurrentQuestion().getId())
+                               .orElseThrow(ResourceNotFoundException::new) : currentQuestion;
 
         userService.updateCurrentQuestion(user, nextQuestion);
         return setQuestionForUser(user, nextQuestion, currentQuestion);
