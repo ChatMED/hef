@@ -12,14 +12,17 @@ public record EvaluationMetrics(
         Double empathy,
         Double bias,
         Double harm,
-        Double trust,
+        Double understanding,
         Double relevance,
         Double currency,
-        Double securityAndPrivacy,
-        Double perceivedUsefulness
+        Double reasoning,
+        Double factualityVerification,
+        Double fabrication,
+        Double falsification,
+        Double plagiarism
 ) implements Serializable {
     public EvaluationMetrics() {
-        this(null, null, null, null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 }
 

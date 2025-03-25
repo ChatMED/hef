@@ -12,11 +12,14 @@ public record EvaluationDto(
         Double empathy,
         Double bias,
         Double harm,
-        Double trust,
+        Double understanding,
         Double relevance,
         Double currency,
-        Double securityAndPrivacy,
-        Double perceivedUsefulness,
+        Double reasoning,
+        Double factualityVerification,
+        Double fabrication,
+        Double falsification,
+        Double plagiarism,
         String comment,
         String username,
         Long answer
@@ -30,11 +33,14 @@ public record EvaluationDto(
                 empathy,
                 bias,
                 harm,
-                trust,
+                understanding,
                 relevance,
                 currency,
-                securityAndPrivacy,
-                perceivedUsefulness
+                reasoning,
+                factualityVerification,
+                fabrication,
+                falsification,
+                plagiarism
         )).comment(comment).user(user).answer(answer).question(answer.getQuestion()).build();
     }
 
@@ -48,11 +54,14 @@ public record EvaluationDto(
                 evaluation.getEvaluationMetrics().empathy(),
                 evaluation.getEvaluationMetrics().bias(),
                 evaluation.getEvaluationMetrics().harm(),
-                evaluation.getEvaluationMetrics().trust(),
+                evaluation.getEvaluationMetrics().understanding(),
                 evaluation.getEvaluationMetrics().relevance(),
                 evaluation.getEvaluationMetrics().currency(),
-                evaluation.getEvaluationMetrics().securityAndPrivacy(),
-                evaluation.getEvaluationMetrics().perceivedUsefulness(),
+                evaluation.getEvaluationMetrics().reasoning(),
+                evaluation.getEvaluationMetrics().factualityVerification(),
+                evaluation.getEvaluationMetrics().fabrication(),
+                evaluation.getEvaluationMetrics().falsification(),
+                evaluation.getEvaluationMetrics().plagiarism(),
                 evaluation.getComment(),
                 evaluation.getUser().getUsername(),
                 evaluation.getAnswer().getId()
