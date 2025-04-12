@@ -25,4 +25,7 @@ public class User {
 
     @ManyToOne
     private Question currentQuestion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workspace workspace;
 }

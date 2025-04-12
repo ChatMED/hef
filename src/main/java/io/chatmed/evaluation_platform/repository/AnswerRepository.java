@@ -9,5 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
+
     Optional<Answer> findByQuestionAndModel(Question question, Model model);
 }

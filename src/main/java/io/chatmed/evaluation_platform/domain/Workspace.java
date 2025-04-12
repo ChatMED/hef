@@ -9,16 +9,18 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "versions")
+@Table(name = "workspaces")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Version {
+public class Workspace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String name;
 
     private LocalDateTime createdAt;
 }

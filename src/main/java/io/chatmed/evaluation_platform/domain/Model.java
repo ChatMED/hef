@@ -18,6 +18,9 @@ public class Model {
 
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workspace workspace;
+
     public Model(String modelName) {
         this.name = modelName;
     }
