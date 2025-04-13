@@ -50,7 +50,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Optional<Question> findNextQuestion(Long id, Long workspaceId) {
-        return questionRepository.findFirstByWorkspaceIdAndIdGreaterThan(workspaceId, id);
+        return questionRepository.findFirstByWorkspaceIdAndIdGreaterThanOrderById(workspaceId, id);
     }
 
     @Override

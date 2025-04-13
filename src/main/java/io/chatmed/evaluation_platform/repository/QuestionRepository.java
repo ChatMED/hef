@@ -19,7 +19,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     Optional<Question> findFirstByWorkspaceIdOrderById(Long workspaceId);
 
-    Optional<Question> findFirstByWorkspaceIdAndIdGreaterThan(Long workspaceId, Long id);
+    Optional<Question> findFirstByWorkspaceIdAndIdGreaterThanOrderById(Long workspaceId, Long id);
 
     Optional<Question> findFirstByWorkspaceIdAndIdLessThanOrderByIdDesc(Long workspaceId, Long id);
 }
