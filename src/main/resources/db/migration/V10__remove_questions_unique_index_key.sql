@@ -1,0 +1,1 @@
+drop index if exists questions_question_key;

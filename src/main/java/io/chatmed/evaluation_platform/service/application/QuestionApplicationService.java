@@ -9,17 +9,11 @@ import java.util.Optional;
 
 public interface QuestionApplicationService {
 
-    List<QuestionDto> findAll();
+    Long getQuestionsCount(Long workspaceId);
 
-    Optional<QuestionDto> findByQuestionKey(Long questionKey);
+    QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long workspaceId, Long modelId);
 
-    Optional<QuestionDto> findByText(String text);
+    QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto, Long workspaceId);
 
-    Long getQuestionsCount();
-
-    QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long modelId);
-
-    QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto);
-
-    QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto);
+    QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto, Long workspaceId);
 }

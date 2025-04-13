@@ -1,6 +1,7 @@
 package io.chatmed.evaluation_platform.service.domain.impl;
 
 import io.chatmed.evaluation_platform.domain.Model;
+import io.chatmed.evaluation_platform.domain.Workspace;
 import io.chatmed.evaluation_platform.repository.ModelRepository;
 import io.chatmed.evaluation_platform.service.domain.ModelService;
 import org.springframework.stereotype.Service;
@@ -20,41 +21,44 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
-    public Optional<Model> findByName(String name) {
-        return modelRepository.findByName(name);
+    public List<Model> findByWorkspaceIdAndNameIn(Workspace workspace, List<String> names) {
+        return modelRepository.findByWorkspaceIdAndNameIn(workspace.getId(), names);
     }
 
     @Override
-    public List<Model> findAll() {
-        return modelRepository.findAllByOrderByIdAsc();
+    public Model save(Model model) {
+        return modelRepository.save(model);
     }
 
     @Override
-    public List<Model> findByNameIn(List<String> names) {
-        return modelRepository.findByNameIn(names);
-    }
-
-    @Override
-    public Optional<Model> save(Model model) {
-        return Optional.of(modelRepository.save(model));
-    }
-
-    @Override
-    public void createNewModels(List<String> modelNames) {
-        Set<String> existingModels = findByNameIn(modelNames).stream()
-                                                             .map(Model::getName)
-                                                             .collect(Collectors.toSet());
+    public void createNewModels(List<String> modelNames, Workspace workspace) {
+        Set<String> existingModels = findByWorkspaceIdAndNameIn(workspace, modelNames).stream()
+                                                                                      .map(Model::getName)
+                                                                                      .collect(Collectors.toSet());
 
         List<Model> newModels = modelNames.stream()
                                           .filter(modelName -> !existingModels.contains(modelName))
-                                          .map(Model::new)
+                                          .map(modelName -> Model.builder()
+                                                                 .name(modelName)
+                                                                 .workspace(workspace)
+                                                                 .build())
                                           .toList();
         modelRepository.saveAll(newModels);
     }
 
     @Override
-    public Long countAllModels() {
-        return modelRepository.count();
+    public Long countAllModelsByWorkspaceId(Long workspaceId) {
+        return modelRepository.countByWorkspaceId(workspaceId);
+    }
+
+    @Override
+    public List<Model> findAllByWorkspace(Long workspaceId) {
+        return modelRepository.findByWorkspaceId(workspaceId);
+    }
+
+    @Override
+    public Optional<Model> findByWorkspaceAndName(Workspace workspace, String name) {
+        return modelRepository.findByWorkspaceIdAndName(workspace.getId(), name);
     }
 
     @Override
@@ -63,7 +67,7 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
-    public Optional<Model> findFirstModel() {
-        return modelRepository.findFirstByOrderByIdAsc();
+    public Optional<Model> findFirstModel(Long workspaceId) {
+        return modelRepository.findFirstByWorkspaceIdOrderByIdAsc(workspaceId);
     }
 }

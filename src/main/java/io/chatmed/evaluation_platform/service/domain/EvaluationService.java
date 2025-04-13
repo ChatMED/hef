@@ -1,9 +1,6 @@
 package io.chatmed.evaluation_platform.service.domain;
 
-import io.chatmed.evaluation_platform.domain.Answer;
-import io.chatmed.evaluation_platform.domain.Evaluation;
-import io.chatmed.evaluation_platform.domain.Question;
-import io.chatmed.evaluation_platform.domain.User;
+import io.chatmed.evaluation_platform.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +14,6 @@ public interface EvaluationService {
     List<Evaluation> findAllEvaluationsForQuestionAndUser(Question question, User user);
 
     List<Evaluation> findAllEvaluationsForUser(User user);
+
+    List<Evaluation> findAllEvaluationsForMembership(Membership membership);
 }

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ModelApplicationService {
 
-    Long getModelsCount();
+    Long getModelsCount(Long workspaceId);
 
-    List<ModelDto> findAll();
+    List<ModelDto> findAllByWorkspace(Long workspaceId);
 }

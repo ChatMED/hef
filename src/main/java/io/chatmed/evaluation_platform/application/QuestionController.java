@@ -1,15 +1,12 @@
 package io.chatmed.evaluation_platform.application;
 
 import io.chatmed.evaluation_platform.dto.QuestionDetailsDto;
-import io.chatmed.evaluation_platform.dto.QuestionDto;
 import io.chatmed.evaluation_platform.dto.UserDto;
 import io.chatmed.evaluation_platform.service.application.QuestionApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -23,14 +20,6 @@ public class QuestionController {
         this.questionApplicationService = questionApplicationService;
     }
 
-    @GetMapping("/overview")
-    @Operation(
-            summary = "Get all questions overview", description = "Retrieves a list of all available questions."
-    )
-    public List<QuestionDto> getQuestions() {
-        return questionApplicationService.findAll();
-    }
-
     @GetMapping("/{username}")
     @Operation(
             summary = "Get current question for user to evaluate",
@@ -38,9 +27,14 @@ public class QuestionController {
     )
     public ResponseEntity<QuestionDetailsDto> getQuestionToEvaluate(
             @PathVariable String username,
+            @RequestParam Long workspaceId,
             @RequestParam(required = false) Long modelId
     ) {
-        return ResponseEntity.ok(questionApplicationService.findQuestionToEvaluate(UserDto.of(username), modelId));
+        return ResponseEntity.ok(questionApplicationService.findQuestionToEvaluate(
+                UserDto.of(username),
+                workspaceId,
+                modelId
+        ));
     }
 
     @PostMapping("/prev/{username}")
@@ -49,9 +43,13 @@ public class QuestionController {
             description = "Retrieves the previous question with answer for user to re-evaluate."
     )
     public ResponseEntity<QuestionDetailsDto> setAndGetPreviousQuestion(
-            @PathVariable String username
+            @PathVariable String username,
+            @RequestParam Long workspaceId
     ) {
-        return ResponseEntity.ok(questionApplicationService.setPreviousQuestionToEvaluate(UserDto.of(username)));
+        return ResponseEntity.ok(questionApplicationService.setPreviousQuestionToEvaluate(
+                UserDto.of(username),
+                workspaceId
+        ));
     }
 
     @PostMapping("/next/{username}")
@@ -60,9 +58,13 @@ public class QuestionController {
             description = "Retrieves the next question with answer for user to re-evaluate."
     )
     public ResponseEntity<QuestionDetailsDto> setAndGetNextQuestion(
-            @PathVariable String username
+            @PathVariable String username,
+            @RequestParam Long workspaceId
     ) {
-        return ResponseEntity.ok(questionApplicationService.setNextQuestionToEvaluate(UserDto.of(username)));
+        return ResponseEntity.ok(questionApplicationService.setNextQuestionToEvaluate(
+                UserDto.of(username),
+                workspaceId
+        ));
     }
 
     @GetMapping("/count")
@@ -70,7 +72,7 @@ public class QuestionController {
             summary = "Get total question count",
             description = "Returns the total count of questions stored in the system."
     )
-    public ResponseEntity<Long> getQuestionsCount() {
-        return ResponseEntity.ok(questionApplicationService.getQuestionsCount());
+    public ResponseEntity<Long> getQuestionsCount(@RequestParam Long workspaceId) {
+        return ResponseEntity.ok(questionApplicationService.getQuestionsCount(workspaceId));
     }
 }

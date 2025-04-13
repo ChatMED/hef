@@ -2,12 +2,14 @@ package io.chatmed.evaluation_platform.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "models")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Model {
