@@ -1,25 +1,27 @@
 package io.chatmed.evaluation_platform.service.domain;
 
 import io.chatmed.evaluation_platform.domain.Model;
+import io.chatmed.evaluation_platform.domain.Workspace;
+import io.chatmed.evaluation_platform.dto.ModelDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ModelService {
 
-    Optional<Model> findByName(String name);
+    Optional<Model> findByWorkspaceAndName(Workspace workspace, String name);
 
     Optional<Model> findById(Long modelId);
 
-    Optional<Model> findFirstModel();
+    Optional<Model> findFirstModel(Long workspaceId);
 
-    List<Model> findAll();
+    List<Model> findByWorkspaceIdAndNameIn(Workspace workspace, List<String> names);
 
-    List<Model> findByNameIn(List<String> names);
+    Model save(Model model);
 
-    Optional<Model> save(Model model);
+    void createNewModels(List<String> modelNames, Workspace workspace);
 
-    void createNewModels(List<String> modelNames);
+    Long countAllModelsByWorkspaceId(Long workspaceId);
 
-    Long countAllModels();
+    List<Model> findAllByWorkspace(Long workspaceId);
 }

@@ -5,14 +5,14 @@ import io.chatmed.evaluation_platform.domain.Question;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record QuestionDto(Long id, String text) {
+public record QuestionDto(Long id, Long questionKey, String text) {
 
     public static QuestionDto from(Question question) {
-        return new QuestionDto(question.getId(), question.getText());
+        return new QuestionDto(question.getId(), question.getQuestionKey(), question.getText());
     }
 
     public Question to(QuestionDto questionDto) {
-        return Question.builder().text(questionDto.text()).build();
+        return Question.builder().questionKey(questionDto.questionKey()).text(questionDto.text()).build();
     }
 
     public static List<QuestionDto> from(List<Question> questions) {

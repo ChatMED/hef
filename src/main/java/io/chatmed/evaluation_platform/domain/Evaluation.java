@@ -33,4 +33,7 @@ public class Evaluation {
 
     @ManyToOne
     private Answer answer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workspace workspace;
 }

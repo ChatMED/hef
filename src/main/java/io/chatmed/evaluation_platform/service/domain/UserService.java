@@ -1,8 +1,8 @@
 package io.chatmed.evaluation_platform.service.domain;
 
-import io.chatmed.evaluation_platform.domain.Question;
 import io.chatmed.evaluation_platform.domain.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -11,7 +11,5 @@ public interface UserService {
 
     Optional<User> login(User user);
 
-    Optional<User> updateCurrentAndNextQuestion(User user, Question question);
-
-    Optional<User> updateCurrentQuestion(User user, Question question);
+    List<User> findAll();
 }

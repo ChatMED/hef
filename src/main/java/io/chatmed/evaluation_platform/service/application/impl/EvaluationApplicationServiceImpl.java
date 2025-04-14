@@ -1,9 +1,6 @@
 package io.chatmed.evaluation_platform.service.application.impl;
 
-import io.chatmed.evaluation_platform.domain.Answer;
-import io.chatmed.evaluation_platform.domain.Evaluation;
-import io.chatmed.evaluation_platform.domain.Question;
-import io.chatmed.evaluation_platform.domain.User;
+import io.chatmed.evaluation_platform.domain.*;
 import io.chatmed.evaluation_platform.dto.EvaluationDto;
 import io.chatmed.evaluation_platform.exceptions.ResourceNotFoundException;
 import io.chatmed.evaluation_platform.service.application.EvaluationApplicationService;
@@ -20,19 +17,25 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
     private final UserService userService;
     private final ModelService modelService;
     private final QuestionService questionService;
+    private final MembershipService membershipService;
+    private final WorkspaceService workspaceService;
 
     public EvaluationApplicationServiceImpl(
             EvaluationService evaluationService,
             AnswerService answerService,
             UserService userService,
             ModelService modelService,
-            QuestionService questionService
+            QuestionService questionService,
+            MembershipService membershipService,
+            WorkspaceService workspaceService
     ) {
         this.evaluationService = evaluationService;
         this.answerService = answerService;
         this.userService = userService;
         this.modelService = modelService;
         this.questionService = questionService;
+        this.membershipService = membershipService;
+        this.workspaceService = workspaceService;
     }
 
     @Override
@@ -42,12 +45,17 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
         User user = userService.findByUsername(evaluationDto.username())
                                .orElseThrow(ResourceNotFoundException::new);
 
+
         Evaluation newEvaluation = evaluationDto.toEvaluation(user, answer);
         evaluationService.findEvaluationForAnswerAndUser(answer, user)
                          .ifPresent(existingEvaluation -> newEvaluation.setId(existingEvaluation.getId()));
         evaluationService.save(newEvaluation);
 
-        if (goToNextUnevaluatedQuestion) updateNextQuestionForUserIfAllModelsEvaluated(answer.getQuestion(), user);
+        if (goToNextUnevaluatedQuestion) {
+            Membership membership = membershipService.findMembership(user, answer.getWorkspace())
+                    .orElseThrow(ResourceNotFoundException::new);
+            updateNextQuestionForUserIfAllModelsEvaluated(answer.getQuestion(), membership);
+        }
     }
 
     @Override
@@ -59,19 +67,24 @@ public class EvaluationApplicationServiceImpl implements EvaluationApplicationSe
                                 .orElseThrow(ResourceNotFoundException::new);
     }
 
-    private void updateNextQuestionForUserIfAllModelsEvaluated(Question question, User user) {
-        List<Evaluation> evaluations = evaluationService.findAllEvaluationsForQuestionAndUser(question, user);
-        boolean allModelsEvaluated = evaluations.size() == modelService.countAllModels();
+    private void updateNextQuestionForUserIfAllModelsEvaluated(Question question, Membership membership) {
+        List<Evaluation> evaluations = evaluationService.findAllEvaluationsForQuestionAndUser(
+                question,
+                membership.getUser()
+        );
+        boolean allModelsEvaluated = evaluations.size() == modelService.countAllModelsByWorkspaceId(
+                membership.getWorkspace().getId()
+        );
 
         if (allModelsEvaluated) {
-            questionService.findNextQuestion(question.getId()).ifPresent(nextQuestion -> {
-                userService.updateCurrentAndNextQuestion(
-                        user,
-                        nextQuestion.getId() >= user.getNextQuestion().getId()
-                                ? nextQuestion
-                                : user.getNextQuestion()
-                );
-            });
+            questionService.findNextQuestion(question.getId(), membership.getWorkspace().getId())
+                           .ifPresent(nextQuestion -> membershipService.updateCurrentAndNextQuestion(
+                                   membership,
+                                   nextQuestion.getId() >= membership.getNextQuestion().getId()
+                                           ? nextQuestion
+                                           : membership.getNextQuestion()
+                           )
+            );
         }
     }
 }

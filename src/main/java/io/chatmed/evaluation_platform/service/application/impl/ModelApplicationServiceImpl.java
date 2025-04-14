@@ -17,12 +17,12 @@ public class ModelApplicationServiceImpl implements ModelApplicationService {
     }
 
     @Override
-    public Long getModelsCount() {
-        return (long) modelService.findAll().size();
+    public Long getModelsCount(Long workspaceId) {
+        return modelService.countAllModelsByWorkspaceId(workspaceId);
     }
 
     @Override
-    public List<ModelDto> findAll() {
-        return ModelDto.from(modelService.findAll());
+    public List<ModelDto> findAllByWorkspace(Long workspaceId) {
+        return ModelDto.from(modelService.findAllByWorkspace(workspaceId));
     }
 }

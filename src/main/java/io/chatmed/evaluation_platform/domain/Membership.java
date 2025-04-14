@@ -6,19 +6,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "versions")
+@Table(name = "memberships")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Version {
+public class Membership {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime createdAt;
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Workspace workspace;
+
+    @ManyToOne
+    private Question nextQuestion;
+
+    @ManyToOne
+    private Question currentQuestion;
 }

@@ -17,7 +17,7 @@ public class Answer {
     private Long id;
 
     private Long answerKey;
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     @ManyToOne
@@ -25,4 +25,7 @@ public class Answer {
 
     @ManyToOne
     private Model model;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workspace workspace;
 }

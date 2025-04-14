@@ -19,10 +19,4 @@ public class User {
     private Long id;
 
     private String username;
-
-    @ManyToOne
-    private Question nextQuestion;
-
-    @ManyToOne
-    private Question currentQuestion;
 }

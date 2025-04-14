@@ -41,7 +41,7 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Optional<Answer> findNextAnswerToEvaluate(Question question, User user) {
         List<Evaluation> evaluations = evaluationService.findAllEvaluationsForQuestionAndUser(question, user);
-        List<Model> models = modelService.findAll();
+        List<Model> models = modelService.findAllByWorkspace(question.getWorkspace().getId());
 
         Model nextModel = models.stream()
                                 .filter(model -> evaluations.stream()
@@ -56,7 +56,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Transactional
     @Override
-    public Optional<Answer> save(Answer answer) {
-        return Optional.of(answerRepository.save(answer));
+    public Answer save(Answer answer) {
+        return answerRepository.save(answer);
     }
 }

@@ -15,5 +15,5 @@ public interface AnswerService {
 
     Optional<Answer> findNextAnswerToEvaluate(Question question, User user);
 
-    Optional<Answer> save(Answer answer);
+    Answer save(Answer answer);
 }

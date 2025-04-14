@@ -3,6 +3,7 @@ package io.chatmed.evaluation_platform.dto;
 import io.chatmed.evaluation_platform.domain.Answer;
 import io.chatmed.evaluation_platform.domain.Evaluation;
 import io.chatmed.evaluation_platform.domain.User;
+import io.chatmed.evaluation_platform.domain.Workspace;
 import io.chatmed.evaluation_platform.domain.valueobject.EvaluationMetrics;
 
 public record EvaluationDto(
@@ -26,22 +27,28 @@ public record EvaluationDto(
 ) {
 
     public Evaluation toEvaluation(User user, Answer answer) {
-        return Evaluation.builder().evaluationMetrics(new EvaluationMetrics(
-                accuracy,
-                comprehensiveness,
-                clarity,
-                empathy,
-                bias,
-                harm,
-                understanding,
-                relevance,
-                currency,
-                reasoning,
-                factualityVerification,
-                fabrication,
-                falsification,
-                plagiarism
-        )).comment(comment).user(user).answer(answer).question(answer.getQuestion()).build();
+        return Evaluation.builder()
+                         .comment(comment)
+                         .user(user)
+                         .answer(answer)
+                         .question(answer.getQuestion())
+                         .workspace(answer.getWorkspace())
+                         .evaluationMetrics(new EvaluationMetrics(
+                                 accuracy,
+                                 comprehensiveness,
+                                 clarity,
+                                 empathy,
+                                 bias,
+                                 harm,
+                                 understanding,
+                                 relevance,
+                                 currency,
+                                 reasoning,
+                                 factualityVerification,
+                                 fabrication,
+                                 falsification,
+                                 plagiarism
+                         )).build();
     }
 
     public static EvaluationDto fromEvaluation(Evaluation evaluation) {

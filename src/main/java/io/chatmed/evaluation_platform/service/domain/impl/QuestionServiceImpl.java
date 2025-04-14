@@ -1,14 +1,13 @@
 package io.chatmed.evaluation_platform.service.domain.impl;
 
 import io.chatmed.evaluation_platform.domain.Evaluation;
+import io.chatmed.evaluation_platform.domain.Membership;
 import io.chatmed.evaluation_platform.domain.Question;
-import io.chatmed.evaluation_platform.domain.User;
-import io.chatmed.evaluation_platform.exceptions.ResourceNotFoundException;
+import io.chatmed.evaluation_platform.domain.Workspace;
 import io.chatmed.evaluation_platform.repository.QuestionRepository;
 import io.chatmed.evaluation_platform.service.domain.EvaluationService;
 import io.chatmed.evaluation_platform.service.domain.ModelService;
 import io.chatmed.evaluation_platform.service.domain.QuestionService;
-import io.chatmed.evaluation_platform.service.domain.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +20,15 @@ import java.util.stream.Collectors;
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final UserService userService;
     private final ModelService modelService;
     private final EvaluationService evaluationService;
 
     public QuestionServiceImpl(
             QuestionRepository questionRepository,
-            UserService userService,
-            ModelService modelService, EvaluationService evaluationService
+            ModelService modelService,
+            EvaluationService evaluationService
     ) {
         this.questionRepository = questionRepository;
-        this.userService = userService;
         this.modelService = modelService;
         this.evaluationService = evaluationService;
     }
@@ -42,37 +39,23 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> findAll() {
-        return questionRepository.findAll();
+    public Optional<Question> findFirstQuestion(Long workspaceId) {
+        return questionRepository.findFirstByWorkspaceIdOrderById(workspaceId);
     }
 
     @Override
-    public Optional<Question> findFirstQuestion() {
-        return questionRepository.findFirstByOrderById();
+    public Optional<Question> findPreviousQuestion(Long id, Long workspaceId) {
+        return questionRepository.findFirstByWorkspaceIdAndIdLessThanOrderByIdDesc(workspaceId, id);
     }
 
     @Override
-    public Optional<Question> findQuestionToEvaluate(User user) {
-        if (user.getCurrentQuestion() == null || user.getNextQuestion() == null) {
-            Question firstAvailableQuestion = findFirstQuestion().orElseThrow(ResourceNotFoundException::new);
-            userService.updateCurrentAndNextQuestion(user, firstAvailableQuestion);
-        }
-        return findById(user.getCurrentQuestion().getId());
+    public Optional<Question> findNextQuestion(Long id, Long workspaceId) {
+        return questionRepository.findFirstByWorkspaceIdAndIdGreaterThanOrderById(workspaceId, id);
     }
 
     @Override
-    public Optional<Question> findPreviousQuestion(Long id) {
-        return questionRepository.findFirstByIdLessThanOrderByIdDesc(id);
-    }
-
-    @Override
-    public Optional<Question> findNextQuestion(Long id) {
-        return questionRepository.findFirstByIdGreaterThan(id);
-    }
-
-    @Override
-    public Optional<Question> findByQuestionKey(Long questionKey) {
-        return questionRepository.findByQuestionKey(questionKey);
+    public Optional<Question> findByWorkspaceAndQuestionKey(Workspace workspace, Long questionKey) {
+        return questionRepository.findByWorkspaceIdAndQuestionKey(workspace.getId(), questionKey);
     }
 
     @Override
@@ -82,13 +65,13 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Transactional
     @Override
-    public Optional<Question> save(Question question) {
-        return Optional.of(questionRepository.save(question));
+    public Question save(Question question) {
+        return questionRepository.save(question);
     }
 
     @Override
-    public Long countEvaluatedQuestions(User user) {
-        List<Evaluation> evaluations = evaluationService.findAllEvaluationsForUser(user);
+    public Long countEvaluatedQuestions(Membership membership) {
+        List<Evaluation> evaluations = evaluationService.findAllEvaluationsForMembership(membership);
         Map<Question, List<Evaluation>> evaluatedQuestions = evaluations.stream()
                                                                         .collect(Collectors.groupingBy(
                                                                                 Evaluation::getQuestion,
@@ -97,12 +80,19 @@ public class QuestionServiceImpl implements QuestionService {
 
         return evaluatedQuestions.entrySet()
                                  .stream()
-                                 .filter(entry -> entry.getValue().size() == modelService.countAllModels())
+                                 .filter(entry -> entry.getValue().size() ==
+                                         modelService.countAllModelsByWorkspaceId(membership.getWorkspace().getId()))
                                  .count();
     }
 
     @Override
-    public Long countRemainingQuestions(User user) {
-        return questionRepository.countAllBy() - countEvaluatedQuestions(user);
+    public Long countRemainingQuestions(Membership membership) {
+        return questionRepository.countAllByWorkspaceId(membership.getWorkspace().getId()) - countEvaluatedQuestions(
+                membership);
+    }
+
+    @Override
+    public Long countByWorkspaceId(Long workspaceId) {
+        return questionRepository.countAllByWorkspaceId(workspaceId);
     }
 }

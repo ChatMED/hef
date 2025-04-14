@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chatmed.evaluation_platform.domain.Answer;
 import io.chatmed.evaluation_platform.domain.Question;
-import io.chatmed.evaluation_platform.domain.Version;
-import io.chatmed.evaluation_platform.exceptions.VersionNotFoundException;
-import io.chatmed.evaluation_platform.service.domain.AnswerService;
-import io.chatmed.evaluation_platform.service.domain.ModelService;
-import io.chatmed.evaluation_platform.service.domain.QuestionService;
-import io.chatmed.evaluation_platform.service.domain.VersionService;
+import io.chatmed.evaluation_platform.domain.Workspace;
+import io.chatmed.evaluation_platform.exceptions.ResourceNotFoundException;
+import io.chatmed.evaluation_platform.service.domain.*;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -22,84 +20,114 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ DataInitializer should work with test folder for testing, data folder for production.
+ */
 @Component
 public class DataInitializer {
 
-    /*
-            Work with test folder for testing, data for production.
-     */
-
     private static final String DATA_LOCATION = "classpath:data/*.json";
-//    private static final String DATA_LOCATION = "classpath:test/*.json";
+    private final long workspaceId;
+    private final String workspaceName;
 
     private final ModelService modelService;
     private final QuestionService questionService;
     private final AnswerService answerService;
-    private final VersionService versionService;
+    private final WorkspaceService workspaceService;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
+    private final MembershipService membershipService;
 
     public DataInitializer(
             ModelService modelService,
             QuestionService questionService,
             AnswerService answerService,
-            VersionService versionService,
-            ObjectMapper objectMapper
+            WorkspaceService workspaceService,
+            UserService userService,
+            ObjectMapper objectMapper,
+            @Value("${data.init.workspace.id}") long workspaceId,
+            @Value("${data.init.workspace.name}") String workspaceName,
+            MembershipService membershipService
     ) {
-        this.modelService = modelService; this.questionService = questionService; this.answerService = answerService;
-        this.versionService = versionService; this.objectMapper = objectMapper;
+        this.modelService = modelService;
+        this.questionService = questionService;
+        this.answerService = answerService;
+        this.workspaceService = workspaceService;
+        this.userService = userService;
+        this.objectMapper = objectMapper;
+        this.workspaceId = workspaceId;
+        this.workspaceName = workspaceName;
+        this.membershipService = membershipService;
     }
 
-    private void initModels() throws IOException {
+    private void initModels(Resource[] resources, Workspace workspace) {
         List<String> modelNames = new ArrayList<>();
 
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources(DATA_LOCATION);
-
         for (Resource resource : resources) {
-            String fileName = Objects.requireNonNull(resource.getFilename()); if (fileName.endsWith(".json")) {
+            String fileName = Objects.requireNonNull(resource.getFilename());
+            if (fileName.endsWith(".json")) {
                 modelNames.add(fileName.replace(".json", ""));
             }
-        } modelService.createNewModels(modelNames);
+        }
+        modelService.createNewModels(modelNames, workspace);
     }
 
-    private Version initVersion() {
-        return versionService.save(Version.builder().createdAt(LocalDateTime.now()).build())
-                             .orElseThrow(VersionNotFoundException::new);
+    private void initWorkspaceMemberships(Workspace workspace, Question question) {
+        userService.findAll().forEach(user -> {
+            if (membershipService.findMembership(user, workspace).isEmpty())
+                membershipService.save(user, workspace, question);
+        });
     }
 
     @PostConstruct
     public void initData() throws IOException {
-        initModels(); Version version = initVersion();
-
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resolver.getResources(DATA_LOCATION);
+
+        Workspace workspace = workspaceService.findById(workspaceId)
+                                              .orElseGet(() -> workspaceService.save(Workspace.builder()
+                                                                                              .name(workspaceName)
+                                                                                              .createdAt(LocalDateTime.now())
+                                                                                              .build()));
+        initModels(resources, workspace);
 
         for (Resource resource : resources) {
             try (InputStream inputStream = resource.getInputStream()) {
                 JsonNode rootNode = objectMapper.readTree(inputStream);
                 String modelName = Objects.requireNonNull(resource.getFilename()).replace(".json", "");
 
-                modelService.findByName(modelName).ifPresent(model -> {
+                modelService.findByWorkspaceAndName(workspace, modelName).ifPresent(model -> {
                     rootNode.fields().forEachRemaining(entry -> {
-                        Long key = Long.parseLong(entry.getKey()); JsonNode node = entry.getValue();
+                        Long key = Long.parseLong(entry.getKey());
+                        JsonNode node = entry.getValue();
 
-                        Question question = questionService.findByQuestionKey(key).orElseGet(Question::new);
+                        Question question = questionService.findByWorkspaceAndQuestionKey(workspace, key)
+                                                           .orElseGet(Question::new);
                         if (question.getId() == null) {
-                            question.setQuestionKey(key); question.setText(node.get("question").asText());
-                            question.setVersion(version); questionService.save(question);
+                            question.setQuestionKey(key);
+                            question.setText(node.get("question").asText());
+                            question.setWorkspace(workspace);
+                            questionService.save(question);
                         }
 
                         Answer answer = answerService.findByQuestionAndModel(question, model).orElseGet(Answer::new);
                         if (answer.getId() == null) {
-                            answer.setAnswerKey(key); answer.setText(node.get("answer").asText());
-                            answer.setQuestion(question); answer.setModel(model); answerService.save(answer);
+                            answer.setAnswerKey(key);
+                            answer.setText(node.get("answer").asText());
+                            answer.setQuestion(question);
+                            answer.setModel(model);
+                            answer.setWorkspace(workspace);
+                            answerService.save(answer);
                         }
                     });
                 });
-
             } catch (Exception e) {
                 throw new RuntimeException("Error reading resource: " + resource.getFilename(), e);
             }
         }
+
+        Question firstQuestionInWorkspace = questionService.findFirstQuestion(workspaceId)
+                                                           .orElseThrow(ResourceNotFoundException::new);
+        initWorkspaceMemberships(workspace, firstQuestionInWorkspace);
     }
 }

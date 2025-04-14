@@ -18,52 +18,47 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     private final EvaluationService evaluationService;
     private final UserService userService;
     private final ModelService modelService;
+    private final MembershipService membershipService;
+    private final WorkspaceService workspaceService;
 
     public QuestionApplicationServiceImpl(
             QuestionService questionService,
             AnswerService answerService,
             EvaluationService evaluationService,
             UserService userService,
-            ModelService modelService
+            ModelService modelService,
+            MembershipService membershipService,
+            WorkspaceService workspaceService
     ) {
-        this.questionService = questionService; this.answerService = answerService;
-        this.evaluationService = evaluationService; this.userService = userService; this.modelService = modelService;
+        this.questionService = questionService;
+        this.answerService = answerService;
+        this.evaluationService = evaluationService;
+        this.userService = userService;
+        this.modelService = modelService;
+        this.membershipService = membershipService;
+        this.workspaceService = workspaceService;
     }
 
     @Override
-    public List<QuestionDto> findAll() {
-        return QuestionDto.from(questionService.findAll());
+    public Long getQuestionsCount(Long workspaceId) {
+        return questionService.countByWorkspaceId(workspaceId);
     }
 
     @Override
-    public Optional<QuestionDto> findByQuestionKey(Long questionKey) {
+    public QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long workspaceId, Long modelId) {
+        if (userDto.username() == null || userDto.username().isEmpty() || userDto.username().equals("null"))
+            throw new ResourceNotFoundException();
 
-        return Optional.of(QuestionDto.from(questionService.findByQuestionKey(questionKey)
-                                                           .orElseThrow(ResourceNotFoundException::new)));
-    }
-
-    @Override
-    public Optional<QuestionDto> findByText(String text) {
-        return Optional.of(QuestionDto.from(questionService.findByText(text)
-                                                           .orElseThrow(ResourceNotFoundException::new)));
-    }
-
-    @Override
-    public Long getQuestionsCount() {
-        return (long) questionService.findAll().size();
-    }
-
-    @Override
-    public QuestionDetailsDto findQuestionToEvaluate(UserDto userDto, Long modelId) {
-        if (userDto.username() == null ||
-                userDto.username().isEmpty() ||
-                userDto.username().equals("null")) throw new ResourceNotFoundException();
         User user = userService.findByUsername(userDto.username())
                                .orElseGet(() -> userService.login(userDto.toUser())
                                                            .orElseThrow(ResourceNotFoundException::new));
 
-        Question questionToEvaluate = questionService.findQuestionToEvaluate(user)
-                                                     .orElseThrow(ResourceNotFoundException::new);
+        Workspace workspace = workspaceService.findById(workspaceId).orElseThrow(ResourceNotFoundException::new);
+
+        Membership membership = membershipService.findMembership(user, workspace)
+                                                 .orElseThrow(ResourceNotFoundException::new);
+
+        Question questionToEvaluate = membership.getCurrentQuestion();
 
         Answer answerForQuestion = modelService.findById(modelId)
                                                .map(model -> answerService.findByQuestionAndModel(
@@ -83,8 +78,8 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
                 QuestionDto.from(questionToEvaluate),
                 AnswerDto.from(answerForQuestion),
                 ModelDto.from(evaluatedModels),
-                questionService.countEvaluatedQuestions(user),
-                questionService.countRemainingQuestions(user),
+                questionService.countEvaluatedQuestions(membership),
+                questionService.countRemainingQuestions(membership),
                 EvaluationDto.fromEvaluation(evaluation)
         );
     }
@@ -97,49 +92,63 @@ public class QuestionApplicationServiceImpl implements QuestionApplicationServic
     }
 
     @Override
-    public QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto) {
+    public QuestionDetailsDto setPreviousQuestionToEvaluate(UserDto userDto, Long workspaceId) {
         User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
-        Question currentQuestion = user.getCurrentQuestion();
-        Question previousQuestion = questionService.findFirstQuestion()
-                                                   .isPresent() && questionService.findFirstQuestion()
-                                                                                  .get()
-                                                                                  .getId()
-                                                                                  .equals(currentQuestion.getId()) ?
-                currentQuestion : questionService.findPreviousQuestion(
-                user.getCurrentQuestion().getId()).orElseThrow(ResourceNotFoundException::new);
+        Workspace workspace = workspaceService.findById(workspaceId).orElseThrow(ResourceNotFoundException::new);
+        Membership membership = membershipService.findMembership(user, workspace)
+                                                 .orElseThrow(ResourceNotFoundException::new);
 
-        userService.updateCurrentQuestion(user, previousQuestion);
-        return setQuestionForUser(user, previousQuestion, currentQuestion);
+        Question currentQuestion = membership.getCurrentQuestion();
+        Question previousQuestion = questionService.findFirstQuestion(workspaceId)
+                                                   .filter(it -> it.getId().equals(currentQuestion.getId()))
+                                                   .map(it -> currentQuestion)
+                                                   .orElseGet(() -> questionService.findPreviousQuestion(
+                                                           currentQuestion.getId(), workspaceId)
+                                                   .orElseThrow(ResourceNotFoundException::new)
+                                                   );
+
+        membershipService.updateCurrent(membership, previousQuestion);
+        return setQuestionForMembership(membership, previousQuestion);
     }
 
     @Override
-    public QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto) {
+    public QuestionDetailsDto setNextQuestionToEvaluate(UserDto userDto, Long workspaceId) {
         User user = userService.findByUsername(userDto.username()).orElseThrow(ResourceNotFoundException::new);
-        Question currentQuestion = user.getCurrentQuestion(); Question nextToEvaluateQuestion = user.getNextQuestion();
+        Workspace workspace = workspaceService.findById(workspaceId).orElseThrow(ResourceNotFoundException::new);
+        Membership membership = membershipService.findMembership(user, workspace)
+                                                 .orElseThrow(ResourceNotFoundException::new);
+        Question currentQuestion = membership.getCurrentQuestion();
+        Question nextToEvaluateQuestion = membership.getNextQuestion();
 
-        Question nextQuestion = currentQuestion.getId() < nextToEvaluateQuestion.getId() ?
-                questionService.findNextQuestion(
-                                       user.getCurrentQuestion().getId())
-                               .orElseThrow(ResourceNotFoundException::new) : currentQuestion;
+        Question nextQuestion = currentQuestion.getId() < nextToEvaluateQuestion.getId()
+                ? questionService.findNextQuestion(currentQuestion.getId(), workspaceId)
+                               .orElseThrow(ResourceNotFoundException::new)
+                : currentQuestion;
 
-        userService.updateCurrentQuestion(user, nextQuestion);
-        return setQuestionForUser(user, nextQuestion, currentQuestion);
+        membershipService.updateCurrent(membership, nextQuestion);
+        return setQuestionForMembership(membership, nextQuestion);
     }
 
-    private QuestionDetailsDto setQuestionForUser(User user, Question newQuestion, Question oldQuestion) {
-        Answer answerForQuestion = modelService.findFirstModel()
+    private QuestionDetailsDto setQuestionForMembership(
+            Membership membership,
+            Question newQuestion
+    ) {
+        Answer answerForQuestion = modelService.findFirstModel(membership.getWorkspace().getId())
                                                .map(model -> answerService.findByQuestionAndModel(newQuestion, model)
                                                                           .orElseThrow(ResourceNotFoundException::new))
-                                               .orElseGet(() -> null);
-        List<Model> evaluatedModels = findEvaluatedModelsForQuestionAndUser(newQuestion, user);
-        Evaluation evaluation = evaluationService.findEvaluationForAnswerAndUser(answerForQuestion, user).orElse(null);
+                                               .orElse(null);
+
+        List<Model> evaluatedModels = findEvaluatedModelsForQuestionAndUser(newQuestion, membership.getUser());
+
+        Evaluation evaluation = evaluationService.findEvaluationForAnswerAndUser(answerForQuestion, membership.getUser())
+                                                 .orElse(null);
 
         return new QuestionDetailsDto(
                 QuestionDto.from(newQuestion),
                 AnswerDto.from(answerForQuestion),
                 ModelDto.from(evaluatedModels),
-                questionService.countEvaluatedQuestions(user),
-                questionService.countRemainingQuestions(user),
+                questionService.countEvaluatedQuestions(membership),
+                questionService.countRemainingQuestions(membership),
                 EvaluationDto.fromEvaluation(evaluation)
         );
     }

@@ -23,6 +23,6 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @ManyToOne
-    private Version version;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workspace workspace;
 }

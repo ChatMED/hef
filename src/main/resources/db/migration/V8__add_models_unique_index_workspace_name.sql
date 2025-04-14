@@ -1,0 +1,1 @@
+create unique index if not exists models_workspace_id_name on models (workspace_id, name);
