@@ -1,0 +1,92 @@
+{
+    "0": {
+        "question": "What are the recommended treatment options for the first line therapy of mild depressive episode in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Selective serotonin reuptake inhibitors."
+    },
+    "1": {
+        "question": "What are the recommended treatment options for the first line therapy of moderate to severe depressive episodes in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Atypical antipsychotics."
+    },
+    "2": {
+        "question": "What are the recommended psychological interventions for depressive episodes in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Cognitive-behavioral therapy and light therapy."
+    },
+    "3": {
+        "question": "What are the recommended treatment options for the suicidal thoughts or intent in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Antidepressants, mood stabilizers, and psychotherapy."
+    },
+    "4": {
+        "question": "What are the recommended treatment options for psychotic depression in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Antidepressants, mood stabilizers, and antiepileptic drugs."
+    },
+    "5": {
+        "question": "What are the recommended treatment options after inadequate response to first-line antidepressant in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Antiepileptic drugs, second-generation antipsychotic, and psychotherapy."
+    },
+    "6": {
+        "question": "What are the recommended treatment options for duration of the antidepressant treatment in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "The recommended treatment options for duration of the antidepressant treatment in patients with epilepsy and depression are 12-24 months."
+    },
+    "7": {
+        "question": "What are the recommended treatment options regarding the utilization of lithium in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Lithium is a first-line treatment for bipolar disorder and is also effective in patients with epilepsy and depression."
+    },
+    "8": {
+        "question": "What are the recommended treatment options regarding the utilization of antipsychotics in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Antidepressants and antiepileptics."
+    },
+    "9": {
+        "question": "What are the recommended treatment options regarding the utilization of \u201calternative medicine\u201d in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: The use of \u201calternative medicine\u201d in patients with epilepsy and depression should be carefully evaluated and monitored."
+    },
+    "10": {
+        "question": "What are the recommended treatment options regarding the utilization of electroconvulsive therapy in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: The recommended treatment options regarding the utilization of electroconvulsive therapy in patients with epilepsy and depression include the use of a high-frequency, short-duration electrical stimulation, which is known to be effective in treating both epilepsy and depression."
+    },
+    "11": {
+        "question": "What are the recommended treatment options regarding the utilization of light therapy in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Light therapy is recommended for the treatment of depression in patients with epilepsy."
+    },
+    "12": {
+        "question": "What are the recommended treatment options regarding the utilization of exercise training in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Exercise training is recommended for patients with epilepsy and depression."
+    },
+    "13": {
+        "question": "What are the recommended treatment options regarding the utilization of vagal nerve stimulation in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: Vagus nerve stimulation (VNS) is an effective treatment for epilepsy and depression."
+    },
+    "14": {
+        "question": "What are the recommended treatment options regarding the utilization of repetitive transcranial magnetic stimulation in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Answer: The recommended treatment options regarding the utilization of repetitive transcranial magnetic stimulation in patients with epilepsy and depression are: 1. The use of rTMS in patients with epilepsy and depression should be considered in the context of the patient's overall treatment plan, and the potential benefits and risks should be carefully weighed. 2. The use of rTMS in patients with epilepsy and depression should be considered in the context of the patient's overall treatment plan, and the potential benefits and risks should be carefully weighed. 3. The use of rTMS in patients with epilepsy and depression should be considered in the context of the patient's overall treatment plan, and the potential benefits and risks should be carefully weighed. 4. The use of rTMS in patients with epilepsy and depression should be considered in the context of the patient's overall treatment plan, and the potential benefits and risks should be carefully weighed."
+    }
+}

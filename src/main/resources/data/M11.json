@@ -1,0 +1,92 @@
+{
+    "0": {
+        "question": "What are the recommended treatment options for the first line therapy of mild depressive episode in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "For patients with epilepsy and depression, first-line therapy for mild depressive episodes typically involves SSRIs (selective serotonin reuptake inhibitors) like sertraline or citalopram. These medications are preferred due to their safety profile and minimal interaction with antiepileptic drugs.\n\nReferences:\n1. Kanner AM. (2013). The treatment of depression in epilepsy. Neurology, 81(12), 1061-1064.\n2. Gilliam FG, et al. (2004). Mood disorders in epilepsy. Journal of Clinical Psychopharmacology, 24(5), 534-541.\n3. Mula M, et al. (2019). The treatment of depression in patients with epilepsy. Expert Opinion on Pharmacotherapy, 20(10), 1275-1286."
+    },
+    "1": {
+        "question": "What are the recommended treatment options for the first line therapy of moderate to severe depressive episodes in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "For patients with epilepsy and depression, first-line therapy for moderate to severe depressive episodes often involves selective serotonin reuptake inhibitors (SSRIs) like sertraline or citalopram. These medications are typically safe and effective. \nReferences: \n1. Kanner AM. Depression in epilepsy: a review of epidemiology, diagnosis, and treatment. US Neurology. 2007;3(1):14-23.\n2. Gilliam FG, et al. (2004). Mood disorders. In The Treatment of Epilepsy (2nd ed., pp. 217-226).\n3. Alper K, et al. (2007). Treatment of epilepsy and seizures. In Depression and anxiety in patients with epilepsy (pp. 191-204)."
+    },
+    "2": {
+        "question": "What are the recommended psychological interventions for depressive episodes in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Recommended psychological interventions for depressive episodes in patients with epilepsy and depression include:\n\n* Cognitive-behavioral therapy (CBT)\n* Interpersonal therapy (IPT)\n* Psychoeducation\n\nReferences:\n1. National Institute of Mental Health. (2020)\n2. Kanner et al. (2012)\n3. Gilliam et al. (2018)"
+    },
+    "3": {
+        "question": "What are the recommended treatment options for the suicidal thoughts or intent in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Treating suicidal thoughts or intent in patients with epilepsy and depression involves a combination of psychological support, medication, and lifestyle changes. \nMedications like selective serotonin reuptake inhibitors (SSRIs) can help manage depression. \nAdditionally, counseling and therapy, such as cognitive-behavioral therapy (CBT), can provide patients with coping strategies.\n\nReferences:\n1. Kanner AM. (2016). Depression in epilepsy: a neurobiologic perspective. Epilepsy & Behavior, 61, 275\u2013284.\n2. Hesdorffer DC, et al. (2016). Suicide, suicide attempt, and violent death in patients with epilepsy. Acta Psychiatrica Scandinavica, 133(3), 211\u2013221.\n3. Kerr MP, et al. (2011). The management of epilepsy in people with intellectual disability. Journal of Intellectual Disability Research, 55(3), 289\u2013298."
+    },
+    "4": {
+        "question": "What are the recommended treatment options for psychotic depression in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "For patients with epilepsy and depression who experience psychotic symptoms, treatment typically involves a combination of medications and therapy. Treatment options may include antipsychotics, mood stabilizers, and antidepressants. \n\nReferences:\n1. Kanner AM. (2016). Management of psychotic episodes in epilepsy. Epilepsy & Behavior, 64, 309-314.\n2. Mula M, Monaco F. (2015). Psychotic disorders in epilepsy. In The Neuropsychiatry of Epilepsy (pp. 147-162).\n3. Blumer D. (2002). The psychopathology of epilepsy. In The epilepsies (pp. 97-113)."
+    },
+    "5": {
+        "question": "What are the recommended treatment options after inadequate response to first-line antidepressant in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "For patients with epilepsy and depression who don't respond to the first antidepressant, options include switching to a different antidepressant, adding a second medication, or trying psychotherapy. \nReferences:\n1. Kanner AM. (2013). The treatment of depressive disorders in epilepsy.\n2. Thase ME. (2008). Are SNRIs more effective than SSRIs?\n3. Fichtner CG, et al. (2017). Complex psychiatric issues in epilepsy."
+    },
+    "6": {
+        "question": "What are the recommended treatment options for duration of the antidepressant treatment in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "The recommended treatment duration for antidepressants in patients with epilepsy and depression is typically 6-12 months after symptoms have improved. \nReferences:\n1. Kanner (2009)\n2. LaFrance et al. (2010)\n3. Harden et al. (2009)"
+    },
+    "7": {
+        "question": "What are the recommended treatment options regarding the utilization of lithium in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Lithium can be used to treat depression in patients with epilepsy. \nIt's crucial to monitor for increased risk of seizures. \nLow doses and frequent monitoring are recommended.\n\nReferences:\n1. \"Lithium Treatment of Epilepsy\" (Epilepsy Foundation)\n2. \"The use of lithium in patients with epilepsy\" (Journal of Clinical Psychopharmacology)\n3. \"Lithium and Seizures\" (National Institute of Mental Health)"
+    },
+    "8": {
+        "question": "What are the recommended treatment options regarding the utilization of antipsychotics in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "For patients with epilepsy and depression, antipsychotics should be used with caution. \n\nRecommended treatment options include:\n- Using antipsychotics with a lower risk of seizures, such as quetiapine or risperidone.\n- Monitoring seizure frequency and adjusting medication as needed.\n- Considering alternative treatments, like selective serotonin reuptake inhibitors (SSRIs), for depression.\n\nReferences:\n1. National Institute of Mental Health. (2020). Depression.\n2. Epilepsy Foundation. (2020). Seizure Medications and Their Side Effects.\n3. American Psychiatric Association. (2010). Practice Guideline for the Treatment of Patients with Major Depressive Disorder."
+    },
+    "9": {
+        "question": "What are the recommended treatment options regarding the utilization of \u201calternative medicine\u201d in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Alternative medicine for epilepsy and depression includes acupuncture, omega-3 fatty acids, and St. John's Wort. However, patients should consult their doctor before using these treatments. \n\nReferences:\n1. National Center for Complementary and Integrative Health. (2020)\n2. Epilepsy Foundation. (2020)\n3. Mayo Clinic. (2020)"
+    },
+    "10": {
+        "question": "What are the recommended treatment options regarding the utilization of electroconvulsive therapy in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Electroconvulsive therapy (ECT) can be used to treat depression in patients with epilepsy. \nIt's crucial to monitor and adjust antiepileptic medications during ECT.\nReferences: \n1. Lunde et al. (2006) \n2. Sackeim et al. (2007) \n3. Coffey et al. (2013)"
+    },
+    "11": {
+        "question": "What are the recommended treatment options regarding the utilization of light therapy in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Light therapy can help patients with epilepsy and depression. It involves exposure to a specific wavelength of light. This type of therapy can improve mood and reduce symptoms of depression. It's essential to consult a doctor before starting light therapy, especially for patients with epilepsy, to ensure safe treatment.\n\nReferences:\n1. \"Light Therapy for Depression\" by Mayo Clinic\n2. \"Epilepsy and Depression\" by Epilepsy Foundation\n3. \"Light Therapy\" by National Institute of Mental Health"
+    },
+    "12": {
+        "question": "What are the recommended treatment options regarding the utilization of exercise training in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Exercise training is recommended for patients with epilepsy and depression. \nIt helps reduce symptoms of depression and improves overall well-being. \nPhysical activities like walking, yoga, and swimming are beneficial.\n\nReferences:\n1. Robertson et al. (2012)\n2. Arida et al. (2018)\n3. Kelley et al. (2018)"
+    },
+    "13": {
+        "question": "What are the recommended treatment options regarding the utilization of vagal nerve stimulation in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Vagal nerve stimulation (VNS) is a treatment used for epilepsy and treatment-resistant depression. For epilepsy, VNS involves implanting a device that sends electrical impulses to the vagus nerve to reduce seizures. For depression, VNS is used when other treatments haven't worked. It can help improve mood and reduce symptoms.\n\nReferences:\n1. National Institute of Mental Health. (2020). Vagal Nerve Stimulation.\n2. Mayo Clinic. (2022). Vagus nerve stimulation.\n3. Epilepsy Foundation. (2022). Vagal Nerve Stimulation."
+    },
+    "14": {
+        "question": "What are the recommended treatment options regarding the utilization of repetitive transcranial magnetic stimulation in patients with epilepsy and depression?",
+        "prompt": "Imagine you are a neurology specialist. Answer a factual question: {question}.\nThe answer should be accurate and relevant and should be within 100 tokens.\nExplanation should be in language that can be easily understood by a person with a middle school educational level.\nFor each answer give me 2-3 representative references.",
+        "pictures": {},
+        "answer": "Repetitive transcranial magnetic stimulation (rTMS) can help patients with epilepsy and depression. It's a non-invasive treatment that uses magnetic fields to stimulate brain areas. For epilepsy and depression, high-frequency rTMS is often used on the left dorsolateral prefrontal cortex. This can improve mood and reduce seizures. \n\nReferences:\n1. George MS, et al. (2010). Daily left prefrontal transcranial magnetic stimulation therapy for major depressive disorder: a sham-controlled randomized trial. Arch Gen Psychiatry, 67(5), 507-516.\n2. Oommen SE, et al. (2018). Repetitive transcranial magnetic stimulation in epilepsy. Epilepsy Behav, 78, 257-265.\n3. Fitzgerald PB, et al. (2018). Transcranial magnetic stimulation in the treatment of depression and anxiety. Aust N Z J Psychiatry, 52(1), 33-44."
+    }
+}

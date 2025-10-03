@@ -30,6 +30,11 @@ public class ModelServiceImpl implements ModelService {
         return modelRepository.save(model);
     }
 
+    private int getModelId(String modelName) {
+        return Integer.parseInt(modelName.split("M")[1]);
+    }
+
+
     @Override
     public void createNewModels(List<String> modelNames, Workspace workspace) {
         Set<String> existingModels = findByWorkspaceIdAndNameIn(workspace, modelNames).stream()
@@ -42,6 +47,7 @@ public class ModelServiceImpl implements ModelService {
                                                                  .name(modelName)
                                                                  .workspace(workspace)
                                                                  .build())
+                                          .sorted((m1, m2) -> getModelId(m1.getName()) - getModelId(m2.getName()))
                                           .toList();
         modelRepository.saveAll(newModels);
     }
